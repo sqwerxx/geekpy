@@ -835,6 +835,13 @@ if (window.Telegram && window.Telegram.WebApp && !TELEGRAM_ID) {
         // ========== ФОН С ТОЧКАМИ ==========
         const canvas = document.getElementById('networkCanvas');
         const ctx = canvas.getContext('2d');
+
+        
+        console.log('Попытка создать канвас...');
+        if (!canvas) {
+            console.log('Canvas не найден!');
+            return;
+        }
         
         const lineColor = '#60a5fa';
         const lineColor2 = '#c084fc';
@@ -1180,6 +1187,7 @@ ensureUserExists();
     </script>
 </body>
 </html>
+
 
 
 
