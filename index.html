@@ -12,7 +12,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
 
+    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Telegram WebApp -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
     <style>
         * {
@@ -776,6 +779,42 @@
         // ========== ПРОВЕРКА SUPABASE ==========
 console.log('Supabase доступен?', typeof window.supabase !== 'undefined' ? '✅' : '❌');
 
+        // ========== ПОЛУЧАЕМ ДАННЫЕ ИЗ TELEGRAM ==========
+let telegramUser = null;
+let TELEGRAM_ID = null;
+
+// Проверяем, открыто ли приложение внутри Telegram
+if (window.Telegram && window.Telegram.WebApp) {
+    const tg = window.Telegram.WebApp;
+    tg.ready(); // Говорим Telegram, что приложение готово
+    
+    // Получаем initData
+    const initData = tg.initDataUnsafe;
+    console.log('Telegram initData:', initData);
+    
+    if (initData && initData.user) {
+        telegramUser = initData.user;
+        TELEGRAM_ID = telegramUser.id;
+        
+        console.log('✅ Пользователь Telegram:', telegramUser.first_name, 'ID:', TELEGRAM_ID);
+        
+        // Обновляем данные пользователя в приложении
+        userData.name = telegramUser.first_name || 'Ученик';
+        userData.telegram_id = TELEGRAM_ID;
+        
+        // Если есть username, сохраняем
+        if (telegramUser.username) {
+            userData.username = telegramUser.username;
+        }
+    } else {
+        console.log('⚠️ Не удалось получить данные пользователя Telegram');
+        TELEGRAM_ID = 1; // Временный ID для тестирования вне Telegram
+    }
+} else {
+    console.log('⚠️ Приложение запущено не в Telegram, используем тестовый режим');
+    TELEGRAM_ID = 1; // Для тестирования в браузере
+}
+
         // ========== ФОН С ТОЧКАМИ ==========
         const canvas = document.getElementById('networkCanvas');
         const ctx = canvas.getContext('2d');
@@ -908,7 +947,28 @@ async function testDatabase() {
 // testDatabase();
 
         // ========== ФУНКЦИИ ДЛЯ РАБОТЫ С БАЗОЙ ==========
-const USER_ID = 1; // ВРЕМЕННО! Потом заменим на Telegram ID
+// Сохранить прогресс
+async function saveProgressToDB() {
+    if (!TELEGRAM_ID) {
+        console.log('⚠️ Нет Telegram ID, пропускаем сохранение');
+        return;
+    }
+    
+    const { error } = await geekpyDB
+        .from('progress')
+        .upsert({
+            user_id: TELEGRAM_ID,  // ← теперь реальный ID
+            topic_name: userData.currentTopic,
+            exercise_index: userData.currentExercise,
+            example_index: userData.currentExample,
+            total_attempts: userData.progress.solved + userData.progress.mistakes,
+            correct_answers: userData.progress.solved,
+            accuracy: userData.progress.accuracy
+        });
+    
+    if (error) console.error('Ошибка сохранения:', error);
+    else console.log('✅ Прогресс сохранён в облако для пользователя', TELEGRAM_ID);
+}
 
 // Сохранить прогресс
 async function saveProgressToDB() {
@@ -944,28 +1004,31 @@ async function loadProgressFromDB() {
 
         // ========== ПРОВЕРКА ПОЛЬЗОВАТЕЛЯ ==========
 async function ensureUserExists() {
+    if (!TELEGRAM_ID) return;
+    
     const { data, error } = await geekpyDB
         .from('users')
         .select('id')
-        .eq('id', USER_ID);
+        .eq('id', TELEGRAM_ID);
     
     if (error) {
         console.error('Ошибка проверки пользователя:', error);
         return;
     }
     
-    // Если пользователя нет — создаём
+    // Если пользователя нет — создаём с реальными данными из Telegram
     if (!data || data.length === 0) {
         const { error: insertError } = await geekpyDB
             .from('users')
             .insert([{ 
-                id: USER_ID, 
-                first_name: userData.name,
-                username: 'telegram_user' 
+                id: TELEGRAM_ID,
+                first_name: telegramUser?.first_name || userData.name,
+                username: telegramUser?.username || null,
+                avatar_url: null // Позже можно добавить фото
             }]);
         
         if (insertError) console.error('Ошибка создания пользователя:', insertError);
-        else console.log('✅ Пользователь создан в базе');
+        else console.log('✅ Пользователь создан в базе с ID', TELEGRAM_ID);
     }
 }
 
@@ -975,14 +1038,19 @@ ensureUserExists();
         
         // ========== ЗАГРУЗКА И СОХРАНЕНИЕ ==========
         function loadUserData() {
-            const saved = localStorage.getItem('geekpy_user');
-            if (saved) {
-                try {
-                    userData = JSON.parse(saved);
-                } catch (e) {}
-            }
-            updateUI();
-        }
+    const saved = localStorage.getItem('geekpy_user');
+    if (saved) {
+        try {
+            userData = JSON.parse(saved);
+        } catch (e) {}
+    }
+    updateUI();
+    
+    // Добавляем проверку пользователя в базе
+    if (TELEGRAM_ID) {
+        ensureUserExists();
+    }
+}
 
         function saveUserData() {
             localStorage.setItem('geekpy_user', JSON.stringify(userData));
@@ -1095,6 +1163,7 @@ ensureUserExists();
     </script>
 </body>
 </html>
+
 
 
 
