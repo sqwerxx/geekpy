@@ -1005,7 +1005,7 @@ async function loadProgressFromDB() {
     const { data, error } = await geekpyDB
         .from('progress')
         .select('*')
-        .eq('user_id', USER_ID);
+        .eq('user_id', TELEGRAM_ID);
     
     if (error) console.error('Ошибка загрузки:', error);
     else if (data.length > 0) {
@@ -1175,6 +1175,7 @@ ensureUserExists();
     </script>
 </body>
 </html>
+
 
 
 
