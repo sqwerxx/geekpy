@@ -11,6 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+
+    <!-- Подключаем Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
         * {
@@ -771,6 +774,43 @@
     </footer>
 
     <script>
+    // ========== ПОДКЛЮЧЕНИЕ К БАЗЕ ==========
+    const supabaseUrl = 'https://твой-проект.supabase.co';
+    const supabaseKey = 'твой_anon_ключ';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    // Функция сохранения прогресса
+    async function saveProgressToCloud() {
+        const { data, error } = await supabase
+            .from('progress')
+            .upsert({
+                user_id: userId,
+                topic_name: userData.currentTopic,
+                exercise_index: userData.currentExercise,
+                example_index: userData.currentExample,
+                total_attempts: userData.progress.solved + userData.progress.mistakes,
+                correct_answers: userData.progress.solved,
+                accuracy: userData.progress.accuracy
+            });
+    
+        if (error) console.error('Ошибка сохранения:', error);
+    }
+
+            // Получаем данные из Telegram
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+
+    const user = tg.initDataUnsafe?.user;
+    const userId = user?.id;
+    const userName = user?.first_name;
+    const userAvatar = user?.photo_url; // если есть
+
+    // Если есть Telegram-данные — используем их
+    if (userId) {
+        // Проверяем, есть ли пользователь в базе
+        checkUserInDatabase(userId, userName, userAvatar);
+    }
+        
         // ========== ФОН С ТОЧКАМИ ==========
         const canvas = document.getElementById('networkCanvas');
         const ctx = canvas.getContext('2d');
@@ -1139,4 +1179,5 @@
         });
     </script>
 </body>
+
 </html>
