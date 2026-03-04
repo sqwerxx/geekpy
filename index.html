@@ -941,6 +941,36 @@ async function loadProgressFromDB() {
         // Тут обновим userData из базы
     }
 }
+
+        // ========== ПРОВЕРКА ПОЛЬЗОВАТЕЛЯ ==========
+async function ensureUserExists() {
+    const { data, error } = await geekpyDB
+        .from('users')
+        .select('id')
+        .eq('id', USER_ID);
+    
+    if (error) {
+        console.error('Ошибка проверки пользователя:', error);
+        return;
+    }
+    
+    // Если пользователя нет — создаём
+    if (!data || data.length === 0) {
+        const { error: insertError } = await geekpyDB
+            .from('users')
+            .insert([{ 
+                id: USER_ID, 
+                first_name: userData.name,
+                username: 'telegram_user' 
+            }]);
+        
+        if (insertError) console.error('Ошибка создания пользователя:', insertError);
+        else console.log('✅ Пользователь создан в базе');
+    }
+}
+
+// Вызови её при загрузке
+ensureUserExists();
         
         // ========== ЗАГРУЗКА И СОХРАНЕНИЕ ==========
         function loadUserData() {
@@ -1064,6 +1094,7 @@ async function loadProgressFromDB() {
     </script>
 </body>
 </html>
+
 
 
 
