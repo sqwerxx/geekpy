@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="tg:color" content="#0a0c10">
     <title>Geekpy</title>
+    
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -786,9 +789,18 @@ let TELEGRAM_ID = null;
 // Проверяем, открыто ли приложение внутри Telegram
 if (window.Telegram && window.Telegram.WebApp) {
     const tg = window.Telegram.WebApp;
-    tg.ready(); // Говорим Telegram, что приложение готово
     
-    // Получаем initData
+    // ВАЖНО: расширяем на весь экран
+    tg.expand();
+    
+    // Устанавливаем цвета под темы Telegram
+    tg.setHeaderColor('#0a0c10');
+    tg.setBackgroundColor('#0a0c10');
+    
+    // Говорим Telegram, что приложение готово
+    tg.ready();
+    
+    // Получаем данные пользователя
     const initData = tg.initDataUnsafe;
     console.log('Telegram initData:', initData);
     
@@ -800,16 +812,21 @@ if (window.Telegram && window.Telegram.WebApp) {
         
         // Обновляем данные пользователя в приложении
         userData.name = telegramUser.first_name || 'Ученик';
-        userData.telegram_id = TELEGRAM_ID;
         
-        // Если есть username, сохраняем
-        if (telegramUser.username) {
-            userData.username = telegramUser.username;
-        }
+        // Если есть фото профиля, можно позже добавить
+        // userData.avatar = telegramUser.photo_url;
+        
     } else {
         console.log('⚠️ Не удалось получить данные пользователя Telegram');
-        TELEGRAM_ID = 1; // Временный ID для тестирования вне Telegram
+        TELEGRAM_ID = null;
     }
+
+    // Если открыто в Telegram, но данные не пришли
+if (window.Telegram && window.Telegram.WebApp && !TELEGRAM_ID) {
+    console.log('⏳ Ждём данные Telegram...');
+    // Можно показать сообщение пользователю
+}
+    
 } else {
     console.log('⚠️ Приложение запущено не в Telegram, используем тестовый режим');
     TELEGRAM_ID = 1; // Для тестирования в браузере
@@ -1163,6 +1180,7 @@ ensureUserExists();
     </script>
 </body>
 </html>
+
 
 
 
