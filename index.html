@@ -906,6 +906,41 @@ async function testDatabase() {
 
 // Раскомментируй для теста:
 // testDatabase();
+
+        // ========== ФУНКЦИИ ДЛЯ РАБОТЫ С БАЗОЙ ==========
+const USER_ID = 1; // ВРЕМЕННО! Потом заменим на Telegram ID
+
+// Сохранить прогресс
+async function saveProgressToDB() {
+    const { error } = await geekpyDB
+        .from('progress')
+        .upsert({
+            user_id: USER_ID,
+            topic_name: userData.currentTopic,
+            exercise_index: userData.currentExercise,
+            example_index: userData.currentExample,
+            total_attempts: userData.progress.solved + userData.progress.mistakes,
+            correct_answers: userData.progress.solved,
+            accuracy: userData.progress.accuracy
+        });
+    
+    if (error) console.error('Ошибка сохранения:', error);
+    else console.log('✅ Прогресс сохранён в облако');
+}
+
+// Загрузить прогресс
+async function loadProgressFromDB() {
+    const { data, error } = await geekpyDB
+        .from('progress')
+        .select('*')
+        .eq('user_id', USER_ID);
+    
+    if (error) console.error('Ошибка загрузки:', error);
+    else if (data.length > 0) {
+        console.log('📥 Загружено из облака:', data);
+        // Тут обновим userData из базы
+    }
+}
         
         // ========== ЗАГРУЗКА И СОХРАНЕНИЕ ==========
         function loadUserData() {
@@ -976,6 +1011,7 @@ async function testDatabase() {
             document.getElementById('hintText').innerHTML = 'Введи ответ';
             updateUI();
             saveUserData();
+            saveProgressToDB();
         });
 
         // ========== АВАТАР ==========
@@ -1028,6 +1064,7 @@ async function testDatabase() {
     </script>
 </body>
 </html>
+
 
 
 
