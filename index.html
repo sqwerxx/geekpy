@@ -774,8 +774,8 @@
     </footer>
 
     <script>
-        // ========== СНАЧАЛА ПРОВЕРЯЕМ, ЧТО SUPABASE ЗАГРУЗИЛСЯ ==========
-        console.log('Supabase доступен?', typeof supabase !== 'undefined' ? '✅' : '❌');
+        // ========== ПРОВЕРКА SUPABASE ==========
+console.log('Supabase доступен?', typeof window.supabase !== 'undefined' ? '✅' : '❌');
 
         // ========== ФОН С ТОЧКАМИ ==========
         const canvas = document.getElementById('networkCanvas');
@@ -1030,3 +1030,4 @@ async function testSupabase() {
     </script>
 </body>
 </html>
+
