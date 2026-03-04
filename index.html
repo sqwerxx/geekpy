@@ -893,21 +893,20 @@ console.log('Supabase доступен?', typeof window.supabase !== 'undefined'
         };
 
         // ========== ПОДКЛЮЧЕНИЕ К БАЗЕ ==========
-const supabaseUrl = 'https://hsbrbfndgrxmhssfqyuo.supabase.co';  // замени на свой URL
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYnJiZm5kZ3J4bWhzc2ZxeXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDg4NjksImV4cCI6MjA4ODIyNDg2OX0.TW1avreYkB80OiK-3Yu-BazXHN0PHaFZUpa2M9MmWZs';                    // замени на свой ключ
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseUrl = 'https://hsbrbfndgrxmhssfqyuo.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYnJiZm5kZ3J4bWhzc2ZxeXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDg4NjksImV4cCI6MjA4ODIyNDg2OX0.TW1avreYkB80OiK-3Yu-BazXHN0PHaFZUpa2M9MmWZs';
+const geekpyDB = window.supabase.createClient(supabaseUrl, supabaseKey);  // ← другое имя!
 
-// Проверка (открой консоль F12 чтобы увидеть)
-console.log('🚀 Supabase подключен:', supabase ? '✅' : '❌');
+console.log('🚀 База данных Geekpy:', geekpyDB ? '✅' : '❌');
 
-// Функция для теста (можешь вызвать где хочешь)
-async function testSupabase() {
-    const { data, error } = await supabase.from('users').select('count');
-    console.log('Тест базы:', error ? '❌ ' + error.message : '✅ работает');
+// Функция для теста
+async function testDatabase() {
+    const { data, error } = await geekpyDB.from('users').select('count');
+    console.log('Тест подключения:', error ? '❌ ' + error.message : '✅ работает');
 }
 
 // Раскомментируй для теста:
-// testSupabase();
+// testDatabase();
         
         // ========== ЗАГРУЗКА И СОХРАНЕНИЕ ==========
         function loadUserData() {
@@ -1030,4 +1029,5 @@ async function testSupabase() {
     </script>
 </body>
 </html>
+
 
