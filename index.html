@@ -1000,24 +1000,6 @@ async function saveProgressToDB() {
     else console.log('✅ Прогресс сохранён в облако для пользователя', TELEGRAM_ID);
 }
 
-// Сохранить прогресс
-async function saveProgressToDB() {
-    const { error } = await geekpyDB
-        .from('progress')
-        .upsert({
-            user_id: USER_ID,
-            topic_name: userData.currentTopic,
-            exercise_index: userData.currentExercise,
-            example_index: userData.currentExample,
-            total_attempts: userData.progress.solved + userData.progress.mistakes,
-            correct_answers: userData.progress.solved,
-            accuracy: userData.progress.accuracy
-        });
-    
-    if (error) console.error('Ошибка сохранения:', error);
-    else console.log('✅ Прогресс сохранён в облако');
-}
-
 // Загрузить прогресс
 async function loadProgressFromDB() {
     const { data, error } = await geekpyDB
@@ -1193,6 +1175,7 @@ ensureUserExists();
     </script>
 </body>
 </html>
+
 
 
 
