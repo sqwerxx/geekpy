@@ -797,23 +797,33 @@
         console.log('Telegram initData:', initData);
 
         if (initData && initData.user) {
-            telegramUser = initData.user;
-            TELEGRAM_ID = telegramUser.id;
-            console.log('✅ Пользователь Telegram:', telegramUser.first_name, 'ID:', TELEGRAM_ID);
-        } else {
-            console.log('⚠️ Не удалось получить данные пользователя Telegram');
-            TELEGRAM_ID = null;
-        }
-
-        if (window.Telegram && window.Telegram.WebApp && !TELEGRAM_ID) {
-            console.log('⏳ Ждём данные Telegram...');
-        }
-
-    } else {
-        console.log('⚠️ Приложение запущено не в Telegram, используем тестовый режим');
-        TELEGRAM_ID = 1;
+    telegramUser = initData.user;
+    TELEGRAM_ID = telegramUser.id;
+    
+    console.log('✅ Пользователь Telegram:', telegramUser.first_name, 'ID:', TELEGRAM_ID);
+    
+    // Обновляем данные пользователя в приложении
+    userData.name = telegramUser.first_name || 'Ученик';
+    
+    // Загружаем фото, если есть
+    if (telegramUser.photo_url) {
+        userData.avatar = telegramUser.photo_url;
+        
+        // В шапке
+        document.getElementById('avatarImage').src = telegramUser.photo_url;
+        document.getElementById('avatarImage').style.display = 'block';
+        document.getElementById('avatarInitials').style.display = 'none';
+        
+        // В профиле
+        document.getElementById('profileImage').src = telegramUser.photo_url;
+        document.getElementById('profileImage').style.display = 'block';
+        document.getElementById('profileInitials').style.display = 'none';
     }
-
+    
+    // Обновляем интерфейс
+    updateUI();
+}
+        
     // ========== ОСНОВНЫЕ ДАННЫЕ ==========
     let userData = {
         name: 'Ученик',
@@ -1131,4 +1141,5 @@ if (!canvas) {
         loadUserData();
     });
 </script>
+
 
