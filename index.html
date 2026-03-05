@@ -1161,6 +1161,37 @@ function updateUI() {
         equationEl.style.opacity = '1';
         equationEl.style.transform = 'scale(1)';
     }, 100);
+    updateTopicsList();
+}
+
+// ========== ЭТА ФУНКЦИЯ ДОЛЖНА БЫТЬ ЗДЕСЬ, ПОСЛЕ updateUI ==========
+function updateTopicsList() {
+    const topicsList = document.getElementById('topicsList');
+    if (!topicsList) return;
+    
+    topicsList.innerHTML = '';
+    
+    userData.topics.forEach(topic => {
+        const topicElement = document.createElement('div');
+        topicElement.className = 'topic';
+        topicElement.innerHTML = `
+            <div class="topic-icon">📚</div>
+            <div class="topic-info">
+                <div class="topic-name">${topic.name}</div>
+                <div class="topic-meta">${topic.progress} • ${topic.accuracy}</div>
+            </div>
+            <div class="topic-status">${topic.status}</div>
+        `;
+        
+        // Клик по теме
+        topicElement.addEventListener('click', () => {
+            if (topic.status === 'доступно' || topic.status === 'в процессе') {
+                selectTopic(topic.name);
+            }
+        });
+        
+        topicsList.appendChild(topicElement);
+    });
 }
 
     // ========== ИНИЦИАЛИЗАЦИЯ ПОСЛЕ ЗАГРУЗКИ DOM ==========
@@ -1288,6 +1319,7 @@ function updateUI() {
 </script>
 </body>
 </html>
+
 
 
 
