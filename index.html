@@ -778,316 +778,164 @@
         </div>
     </footer>
 
-    <script>
-        // ========== ПРОВЕРКА SUPABASE ==========
-console.log('Supabase доступен?', typeof window.supabase !== 'undefined' ? '✅' : '❌');
+<script>
+    // ========== ПРОВЕРКА SUPABASE ==========
+    console.log('Supabase доступен?', typeof window.supabase !== 'undefined' ? '✅' : '❌');
 
-        // ========== ПОЛУЧАЕМ ДАННЫЕ ИЗ TELEGRAM ==========
-let telegramUser = null;
-let TELEGRAM_ID = null;
+    // ========== ПОЛУЧАЕМ ДАННЫЕ ИЗ TELEGRAM ==========
+    let telegramUser = null;
+    let TELEGRAM_ID = null;
 
-// Проверяем, открыто ли приложение внутри Telegram
-if (window.Telegram && window.Telegram.WebApp) {
-    const tg = window.Telegram.WebApp;
-    
-    // ВАЖНО: расширяем на весь экран
-    tg.expand();
-    
-    // Устанавливаем цвета под темы Telegram
-    tg.setHeaderColor('#0a0c10');
-    tg.setBackgroundColor('#0a0c10');
-    
-    // Говорим Telegram, что приложение готово
-    tg.ready();
-    
-    // Получаем данные пользователя
-    const initData = tg.initDataUnsafe;
-    console.log('Telegram initData:', initData);
-    
-    if (initData && initData.user) {
-        telegramUser = initData.user;
-        TELEGRAM_ID = telegramUser.id;
-        
-        console.log('✅ Пользователь Telegram:', telegramUser.first_name, 'ID:', TELEGRAM_ID);
-        
-        // Обновляем данные пользователя в приложении
-        userData.name = telegramUser.first_name || 'Ученик';
-        
-        // Если есть фото профиля, можно позже добавить
-        // userData.avatar = telegramUser.photo_url;
-        
+    if (window.Telegram && window.Telegram.WebApp) {
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.setHeaderColor('#0a0c10');
+        tg.setBackgroundColor('#0a0c10');
+        tg.ready();
+
+        const initData = tg.initDataUnsafe;
+        console.log('Telegram initData:', initData);
+
+        if (initData && initData.user) {
+            telegramUser = initData.user;
+            TELEGRAM_ID = telegramUser.id;
+            console.log('✅ Пользователь Telegram:', telegramUser.first_name, 'ID:', TELEGRAM_ID);
+        } else {
+            console.log('⚠️ Не удалось получить данные пользователя Telegram');
+            TELEGRAM_ID = null;
+        }
+
+        if (window.Telegram && window.Telegram.WebApp && !TELEGRAM_ID) {
+            console.log('⏳ Ждём данные Telegram...');
+        }
+
     } else {
-        console.log('⚠️ Не удалось получить данные пользователя Telegram');
-        TELEGRAM_ID = null;
+        console.log('⚠️ Приложение запущено не в Telegram, используем тестовый режим');
+        TELEGRAM_ID = 1;
     }
 
-    // Если открыто в Telegram, но данные не пришли
-if (window.Telegram && window.Telegram.WebApp && !TELEGRAM_ID) {
-    console.log('⏳ Ждём данные Telegram...');
-    // Можно показать сообщение пользователю
-}
-    
-} else {
-    console.log('⚠️ Приложение запущено не в Telegram, используем тестовый режим');
-    TELEGRAM_ID = 1; // Для тестирования в браузере
-}
+    // ========== ОСНОВНЫЕ ДАННЫЕ ==========
+    let userData = {
+        name: 'Ученик',
+        avatar: null,
+        currentTopic: 'Линейные уравнения',
+        currentExercise: 2,
+        currentExample: 0,
+        examples: ['2x + 5 = 15', '3x - 7 = 11', '4x + 8 = 20', '5x - 3 = 22', '6x + 4 = 28'],
+        answers: [5, 6, 3, 5, 4],
+        progress: {
+            accuracy: 85,
+            solved: 12,
+            mistakes: 3
+        },
+        topics: [
+            { name: 'Линейные уравнения', progress: '8/10', accuracy: '85%', status: 'в процессе' }
+        ]
+    };
 
-        // ========== ФОН С ТОЧКАМИ ==========
-        /*
-        const canvas = document.getElementById('networkCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        console.log('Попытка создать канвас...');
-if (!canvas) {
-    console.log('❌ Canvas не найден!');
-    document.body.innerHTML += '<div style="color:red; position:fixed; top:0; left:0; z-index:9999;">Ошибка: Canvas не найден</div>';
-    // Вместо return - просто не запускаем анимацию
-} else {
-    console.log('✅ Canvas найден, размер:', canvas.width, 'x', canvas.height);
-    // Запускаем всё, что связано с канвасом
-    initCanvas(); // Создадим отдельную функцию
-}
+    // ========== ПОДКЛЮЧЕНИЕ К БАЗЕ ==========
+    const supabaseUrl = 'https://hsbrbfndgrxmhssfqyuo.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYnJiZm5kZ3J4bWhzc2ZxeXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDg4NjksImV4cCI6MjA4ODIyNDg2OX0.TW1avreYkB80OiK-3Yu-BazXHN0PHaFZUpa2M9MmWZs';
+    const geekpyDB = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        function initCanvas() {
-        const lineColor = '#60a5fa';
-        const lineColor2 = '#c084fc';
+    console.log('🚀 База данных Geekpy:', geekpyDB ? '✅' : '❌');
 
-        let points = [];
-
-        function getPointsCount() {
-            const width = window.innerWidth;
-            const minPoints = 60;
-            const maxPoints = 140;
-            const minWidth = 375;
-            const maxWidth = 1200;
-            
-            if (width <= minWidth) return minPoints;
-            if (width >= maxWidth) return maxPoints;
-            return Math.round(minPoints + (width - minWidth) * (maxPoints - minPoints) / (maxWidth - minWidth));
+    // ========== ФУНКЦИИ ==========
+    async function saveProgressToDB() {
+        if (!TELEGRAM_ID) {
+            console.log('⚠️ Нет Telegram ID, пропускаем сохранение');
+            return;
         }
 
-        function createPoints() {
-            const count = getPointsCount();
-            points = [];
-            for (let i = 0; i < count; i++) {
-                points.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    vx: (Math.random() - 0.5) * 0.4,
-                    vy: (Math.random() - 0.5) * 0.4,
-                });
-            }
-        }
+        const { error } = await geekpyDB
+            .from('progress')
+            .upsert({
+                user_id: TELEGRAM_ID,
+                topic_name: userData.currentTopic,
+                exercise_index: userData.currentExercise,
+                example_index: userData.currentExample,
+                total_attempts: userData.progress.solved + userData.progress.mistakes,
+                correct_answers: userData.progress.solved,
+                accuracy: userData.progress.accuracy
+            });
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            createPoints();
-        }
-        
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            for (let point of points) {
-                point.x += point.vx;
-                point.y += point.vy;
-                
-                if (point.x < 0 || point.x > canvas.width) point.vx *= -1;
-                if (point.y < 0 || point.y > canvas.height) point.vy *= -1;
-                
-                point.x = Math.max(0, Math.min(canvas.width, point.x));
-                point.y = Math.max(0, Math.min(canvas.height, point.y));
-            }
-
-            const maxDistance = canvas.width * 0.18;
-            const minDistance = canvas.width * 0.07;
-            
-            for (let i = 0; i < points.length; i++) {
-                for (let j = i + 1; j < points.length; j++) {
-                    const p1 = points[i];
-                    const p2 = points[j];
-                    
-                    const dx = p1.x - p2.x;
-                    const dy = p1.y - p2.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    
-                    if (distance < maxDistance) {
-                        let opacity;
-                        if (distance <= minDistance) {
-                            opacity = 1.0;
-                        } else {
-                            opacity = 1.0 - (distance - minDistance) / (maxDistance - minDistance);
-                        }
-                        
-                        const color = (i + j) % 2 === 0 ? lineColor : lineColor2;
-                        
-                        ctx.beginPath();
-                        ctx.moveTo(p1.x, p1.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = color;
-                        ctx.lineWidth = 1.2;
-                        ctx.globalAlpha = opacity * 0.6;
-                        ctx.stroke();
-                    }
-                }
-            }
-            
-            ctx.globalAlpha = 1.0;
-            requestAnimationFrame(animate);
-        }
-
-        animate();
-        }
-        */
-
-        // ========== ДАННЫЕ ПОЛЬЗОВАТЕЛЯ ==========
-        let userData = {
-            name: 'Ученик',
-            avatar: null,
-            currentTopic: 'Линейные уравнения',
-            currentExercise: 2,
-            currentExample: 0,
-            examples: ['2x + 5 = 15', '3x - 7 = 11', '4x + 8 = 20', '5x - 3 = 22', '6x + 4 = 28'],
-            answers: [5, 6, 3, 5, 4],
-            progress: {
-                accuracy: 85,
-                solved: 12,
-                mistakes: 3
-            },
-            topics: [
-                { name: 'Линейные уравнения', progress: '8/10', accuracy: '85%', status: 'в процессе' }
-            ]
-        };
-
-        // ========== ПОДКЛЮЧЕНИЕ К БАЗЕ ==========
-const supabaseUrl = 'https://hsbrbfndgrxmhssfqyuo.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYnJiZm5kZ3J4bWhzc2ZxeXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDg4NjksImV4cCI6MjA4ODIyNDg2OX0.TW1avreYkB80OiK-3Yu-BazXHN0PHaFZUpa2M9MmWZs';
-const geekpyDB = window.supabase.createClient(supabaseUrl, supabaseKey);  // ← другое имя!
-
-console.log('🚀 База данных Geekpy:', geekpyDB ? '✅' : '❌');
-
-// Функция для теста
-async function testDatabase() {
-    const { data, error } = await geekpyDB.from('users').select('count');
-    console.log('Тест подключения:', error ? '❌ ' + error.message : '✅ работает');
-}
-
-// Раскомментируй для теста:
-// testDatabase();
-
-        // ========== ФУНКЦИИ ДЛЯ РАБОТЫ С БАЗОЙ ==========
-// Сохранить прогресс
-async function saveProgressToDB() {
-    if (!TELEGRAM_ID) {
-        console.log('⚠️ Нет Telegram ID, пропускаем сохранение');
-        return;
+        if (error) console.error('Ошибка сохранения:', error);
+        else console.log('✅ Прогресс сохранён в облако для пользователя', TELEGRAM_ID);
     }
-    
-    const { error } = await geekpyDB
-        .from('progress')
-        .upsert({
-            user_id: TELEGRAM_ID,  // ← теперь реальный ID
-            topic_name: userData.currentTopic,
-            exercise_index: userData.currentExercise,
-            example_index: userData.currentExample,
-            total_attempts: userData.progress.solved + userData.progress.mistakes,
-            correct_answers: userData.progress.solved,
-            accuracy: userData.progress.accuracy
-        });
-    
-    if (error) console.error('Ошибка сохранения:', error);
-    else console.log('✅ Прогресс сохранён в облако для пользователя', TELEGRAM_ID);
-}
 
-// Загрузить прогресс
-async function loadProgressFromDB() {
-    const { data, error } = await geekpyDB
-        .from('progress')
-        .select('*')
-        .eq('user_id', TELEGRAM_ID);
-    
-    if (error) console.error('Ошибка загрузки:', error);
-    else if (data.length > 0) {
-        console.log('📥 Загружено из облака:', data);
-        // Тут обновим userData из базы
-    }
-}
+    async function loadProgressFromDB() {
+        const { data, error } = await geekpyDB
+            .from('progress')
+            .select('*')
+            .eq('user_id', TELEGRAM_ID);
 
-        // ========== ПРОВЕРКА ПОЛЬЗОВАТЕЛЯ ==========
-async function ensureUserExists() {
-    if (!TELEGRAM_ID) return;
-    
-    const { data, error } = await geekpyDB
-        .from('users')
-        .select('id')
-        .eq('id', TELEGRAM_ID);
-    
-    if (error) {
-        console.error('Ошибка проверки пользователя:', error);
-        return;
+        if (error) console.error('Ошибка загрузки:', error);
+        else if (data.length > 0) {
+            console.log('📥 Загружено из облака:', data);
+        }
     }
-    
-    // Если пользователя нет — создаём с реальными данными из Telegram
-    if (!data || data.length === 0) {
-        const { error: insertError } = await geekpyDB
+
+    async function ensureUserExists() {
+        if (!TELEGRAM_ID) return;
+
+        const { data, error } = await geekpyDB
             .from('users')
-            .insert([{ 
-                id: TELEGRAM_ID,
-                first_name: telegramUser?.first_name || userData.name,
-                username: telegramUser?.username || null,
-                avatar_url: null // Позже можно добавить фото
-            }]);
-        
-        if (insertError) console.error('Ошибка создания пользователя:', insertError);
-        else console.log('✅ Пользователь создан в базе с ID', TELEGRAM_ID);
-    }
-}
+            .select('id')
+            .eq('id', TELEGRAM_ID);
 
-// Вызови её при загрузке
-loadUserData();
-ensureUserExists();
-        
-        // ========== ЗАГРУЗКА И СОХРАНЕНИЕ ==========
-        function loadUserData() {
-    const saved = localStorage.getItem('geekpy_user');
-    if (saved) {
-        try {
-            userData = JSON.parse(saved);
-        } catch (e) {}
-    }
-    updateUI();
-    
-    // Добавляем проверку пользователя в базе
-    if (TELEGRAM_ID) {
-        ensureUserExists();
-    }
-}
-
-        function saveUserData() {
-            localStorage.setItem('geekpy_user', JSON.stringify(userData));
+        if (error) {
+            console.error('Ошибка проверки пользователя:', error);
+            return;
         }
 
-        function updateUI() {
-            document.getElementById('topicName').textContent = userData.currentTopic;
-            document.getElementById('progressText').textContent = 
-                `${userData.currentExercise + 1}/${userData.examples.length}`;
-            document.getElementById('equation').textContent = 
-                userData.examples[userData.currentExample];
-            
-            document.getElementById('statsAccuracy').textContent = userData.progress.accuracy + '%';
-            document.getElementById('statsSolved').textContent = userData.progress.solved;
-            document.getElementById('statsMistakes').textContent = userData.progress.mistakes;
-            
-            document.getElementById('profileName').textContent = userData.name;
-            
-            const avatarInitials = document.getElementById('avatarInitials');
-            const profileInitials = document.getElementById('profileInitials');
-            avatarInitials.textContent = userData.name.charAt(0);
-            profileInitials.textContent = userData.name.charAt(0);
+        if (!data || data.length === 0) {
+            const { error: insertError } = await geekpyDB
+                .from('users')
+                .insert([{
+                    id: TELEGRAM_ID,
+                    first_name: telegramUser?.first_name || userData.name,
+                    username: telegramUser?.username || null,
+                    avatar_url: null
+                }]);
+
+            if (insertError) console.error('Ошибка создания пользователя:', insertError);
+            else console.log('✅ Пользователь создан в базе с ID', TELEGRAM_ID);
         }
+    }
+
+    function loadUserData() {
+        const saved = localStorage.getItem('geekpy_user');
+        if (saved) {
+            try {
+                userData = JSON.parse(saved);
+            } catch (e) { }
+        }
+        updateUI();
+        if (TELEGRAM_ID) ensureUserExists();
+    }
+
+    function saveUserData() {
+        localStorage.setItem('geekpy_user', JSON.stringify(userData));
+    }
+
+    function updateUI() {
+        document.getElementById('topicName').textContent = userData.currentTopic;
+        document.getElementById('progressText').textContent = `${userData.currentExercise + 1}/${userData.examples.length}`;
+        document.getElementById('equation').textContent = userData.examples[userData.currentExample];
+        document.getElementById('statsAccuracy').textContent = userData.progress.accuracy + '%';
+        document.getElementById('statsSolved').textContent = userData.progress.solved;
+        document.getElementById('statsMistakes').textContent = userData.progress.mistakes;
+        document.getElementById('profileName').textContent = userData.name;
+        document.getElementById('avatarInitials').textContent = userData.name.charAt(0);
+        document.getElementById('profileInitials').textContent = userData.name.charAt(0);
+    }
+
+    // ========== ИНИЦИАЛИЗАЦИЯ ПОСЛЕ ЗАГРУЗКИ DOM ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('✅ DOM загружен, начинаем навешивать события');
+
+        // ПРОВЕРКА РАБОТОСПОСОБНОСТИ
+        alert('Скрипт работает!');  // Убери после проверки
 
         // ========== НАВИГАЦИЯ ==========
         document.querySelectorAll('.nav-item').forEach(item => {
@@ -1105,7 +953,7 @@ ensureUserExists();
             const correct = userData.answers[userData.currentExample];
             const hintBox = document.getElementById('hintBox');
             const hintText = document.getElementById('hintText');
-            
+
             if (parseInt(answer) === correct) {
                 hintText.innerHTML = '✅ Верно!';
                 hintBox.style.background = 'rgba(34, 197, 94, 0.1)';
@@ -1173,21 +1021,7 @@ ensureUserExists();
             }
         });
 
+        // Загружаем данные
         loadUserData();
-    </script>
-</body>
-</html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    });
+</script>
