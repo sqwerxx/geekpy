@@ -317,6 +317,12 @@
             box-shadow: 0 8px 20px rgba(96, 165, 250, 0.4);
         }
 
+        .btn-primary:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            background: rgba(96, 165, 250, 0.1);
+        }
+
         .btn-outline {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -842,6 +848,7 @@
         currentTopic: 'Линейные уравнения',
         currentExercise: 2,
         currentExample: 0,
+        canProceed: false,  // разрешено ли нажимать "Далее"
         examples: ['2x + 5 = 15', '3x - 7 = 11', '4x + 8 = 20', '5x - 3 = 22', '6x + 4 = 28'],
         answers: [5, 6, 3, 5, 4],
         progress: {
@@ -1091,26 +1098,32 @@
         localStorage.setItem('geekpy_user', JSON.stringify(userData));
     }
 
-    function updateUI() {
-        const equationEl = document.getElementById('equation');
-        equationEl.style.opacity = '0';
-        equationEl.style.transform = 'scale(0.98)';
-        document.getElementById('topicName').textContent = userData.currentTopic;
-        document.getElementById('progressText').textContent = `${userData.currentExercise + 1}/${userData.examples.length}`;
-        document.getElementById('statsAccuracy').textContent = userData.progress.accuracy + '%';
-        document.getElementById('statsSolved').textContent = userData.progress.solved;
-        document.getElementById('statsMistakes').textContent = userData.progress.mistakes;
-        document.getElementById('profileName').textContent = userData.name;
-        document.getElementById('avatarInitials').textContent = userData.name.charAt(0);
-        document.getElementById('profileInitials').textContent = userData.name.charAt(0);
+function updateUI() {
+    const equationEl = document.getElementById('equation');
+    equationEl.style.opacity = '0';
+    equationEl.style.transform = 'scale(0.98)';
+    document.getElementById('topicName').textContent = userData.currentTopic;
+    document.getElementById('progressText').textContent = `${userData.currentExercise + 1}/${userData.examples.length}`;
+    document.getElementById('statsAccuracy').textContent = userData.progress.accuracy + '%';
+    document.getElementById('statsSolved').textContent = userData.progress.solved;
+    document.getElementById('statsMistakes').textContent = userData.progress.mistakes;
+    document.getElementById('profileName').textContent = userData.name;
+    document.getElementById('avatarInitials').textContent = userData.name.charAt(0);
+    document.getElementById('profileInitials').textContent = userData.name.charAt(0);
 
-        setTimeout(() => {
-            // Тут обновляем текст
-            equationEl.textContent = userData.examples[userData.currentExample];
-            equationEl.style.opacity = '1';
-            equationEl.style.transform = 'scale(1)';
-        }, 100);
-    }
+    // При обновлении страницы блокируем кнопку "Далее"
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.disabled = true;
+    nextBtn.style.opacity = '0.5';
+    nextBtn.style.pointerEvents = 'none';
+    userData.canProceed = false;
+
+    setTimeout(() => {
+        equationEl.textContent = userData.examples[userData.currentExample];
+        equationEl.style.opacity = '1';
+        equationEl.style.transform = 'scale(1)';
+    }, 100);
+}
 
     // ========== ИНИЦИАЛИЗАЦИЯ ПОСЛЕ ЗАГРУЗКИ DOM ==========
     document.addEventListener('DOMContentLoaded', function() {
@@ -1132,33 +1145,58 @@
             const correct = userData.answers[userData.currentExample];
             const hintBox = document.getElementById('hintBox');
             const hintText = document.getElementById('hintText');
-
+            const nextBtn = document.getElementById('nextBtn');
+            
             if (parseInt(answer) === correct) {
-                hintText.innerHTML = '✅ Верно!';
-                hintBox.style.background = 'rgba(34, 197, 94, 0.1)';
-                hintBox.style.animation = 'pulse 0.5s ease';
+        hintText.innerHTML = '✅ Верно!';
+        hintBox.style.background = 'rgba(34, 197, 94, 0.1)';
+        hintBox.style.animation = 'pulse 0.5s ease';
+        
+        // ✅ РАЗБЛОКИРУЕМ КНОПКУ
+        userData.canProceed = true;
+        nextBtn.disabled = false;
+        nextBtn.style.opacity = '1';
+        nextBtn.style.pointerEvents = 'auto';
 
                 setTimeout(() => {
                     hintBox.style.animation = '';
                 }, 500);
                 
             } else {
-                hintText.innerHTML = '❌ Неправильно';
-                hintBox.style.background = 'rgba(239, 68, 68, 0.1)';
-            }
-        });
+        hintText.innerHTML = '❌ Неправильно';
+        hintBox.style.background = 'rgba(239, 68, 68, 0.1)';
+        
+        // ❌ БЛОКИРУЕМ (на всякий случай)
+        userData.canProceed = false;
+        nextBtn.disabled = true;
+        nextBtn.style.opacity = '0.5';
+        nextBtn.style.pointerEvents = 'none';
+    }
+});
 
         document.getElementById('nextBtn').addEventListener('click', () => {
-            if (userData.currentExample < userData.examples.length - 1) {
-                userData.currentExample++;
-            }
-            document.getElementById('answerInput').value = '';
-            document.getElementById('hintBox').style.background = 'rgba(255, 255, 255, 0.05)';
-            document.getElementById('hintText').innerHTML = 'Введи ответ';
-            updateUI();
-            saveUserData();
-            saveProgressToDB();
-        });
+            if (!userData.canProceed) return;  // ← если нельзя — выходим
+    
+    if (userData.currentExample < userData.examples.length - 1) {
+        userData.currentExample++;
+    }
+    
+    // Сбрасываем флаг — новый пример нужно решать заново
+    userData.canProceed = false;
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.disabled = true;
+    nextBtn.style.opacity = '0.5';
+    nextBtn.style.pointerEvents = 'none';
+    
+    // Очищаем поле и подсказку
+    document.getElementById('answerInput').value = '';
+    document.getElementById('hintBox').style.background = 'rgba(255, 255, 255, 0.05)';
+    document.getElementById('hintText').innerHTML = 'Введи ответ';
+    
+    updateUI();
+    saveUserData();
+    saveProgressToDB();
+});
 
         // ========== АВАТАР ==========
         document.getElementById('avatarUpload').addEventListener('change', (e) => {
@@ -1212,6 +1250,7 @@
 </script>
 </body>
 </html>
+
 
 
 
