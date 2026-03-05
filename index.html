@@ -786,45 +786,7 @@
     let telegramUser = null;
     let TELEGRAM_ID = null;
 
-    if (window.Telegram && window.Telegram.WebApp) {
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.setHeaderColor('#0a0c10');
-        tg.setBackgroundColor('#0a0c10');
-        tg.ready();
-
-        const initData = tg.initDataUnsafe;
-        console.log('Telegram initData:', initData);
-
-        if (initData && initData.user) {
-    telegramUser = initData.user;
-    TELEGRAM_ID = telegramUser.id;
-    
-    console.log('✅ Пользователь Telegram:', telegramUser.first_name, 'ID:', TELEGRAM_ID);
-    
-    // Обновляем данные пользователя в приложении
-    userData.name = telegramUser.first_name || 'Ученик';
-    
-    // Загружаем фото, если есть
-    if (telegramUser.photo_url) {
-        userData.avatar = telegramUser.photo_url;
-        
-        // В шапке
-        document.getElementById('avatarImage').src = telegramUser.photo_url;
-        document.getElementById('avatarImage').style.display = 'block';
-        document.getElementById('avatarInitials').style.display = 'none';
-        
-        // В профиле
-        document.getElementById('profileImage').src = telegramUser.photo_url;
-        document.getElementById('profileImage').style.display = 'block';
-        document.getElementById('profileInitials').style.display = 'none';
-    }
-    
-    // Обновляем интерфейс
-    updateUI();
-}
-        
-    // ========== ОСНОВНЫЕ ДАННЫЕ ==========
+    // ========== ОСНОВНЫЕ ДАННЫЕ (ПЕРЕНЁС НАВЕРХ, ЧТОБЫ БЫЛО ДОСТУПНО ВЕЗДЕ) ==========
     let userData = {
         name: 'Ученик',
         avatar: null,
@@ -843,6 +805,51 @@
         ]
     };
 
+    if (window.Telegram && window.Telegram.WebApp) {
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.setHeaderColor('#0a0c10');
+        tg.setBackgroundColor('#0a0c10');
+        tg.ready();
+
+        const initData = tg.initDataUnsafe;
+        console.log('Telegram initData:', initData);
+
+        if (initData && initData.user) {
+            telegramUser = initData.user;
+            TELEGRAM_ID = telegramUser.id;
+            
+            console.log('✅ Пользователь Telegram:', telegramUser.first_name, 'ID:', TELEGRAM_ID);
+            
+            // Обновляем данные пользователя в приложении
+            userData.name = telegramUser.first_name || 'Ученик';
+            
+            // Загружаем фото, если есть
+            if (telegramUser.photo_url) {
+                userData.avatar = telegramUser.photo_url;
+                
+                // В шапке
+                document.getElementById('avatarImage').src = telegramUser.photo_url;
+                document.getElementById('avatarImage').style.display = 'block';
+                document.getElementById('avatarInitials').style.display = 'none';
+                
+                // В профиле
+                document.getElementById('profileImage').src = telegramUser.photo_url;
+                document.getElementById('profileImage').style.display = 'block';
+                document.getElementById('profileInitials').style.display = 'none';
+            }
+            
+            // Обновляем интерфейс
+            updateUI();
+        } else {
+            console.log('⚠️ Не удалось получить данные пользователя Telegram');
+            TELEGRAM_ID = null;
+        }
+    } else {
+        console.log('⚠️ Приложение запущено не в Telegram, используем тестовый режим');
+        TELEGRAM_ID = 1;
+    }
+
     // ========== ПОДКЛЮЧЕНИЕ К БАЗЕ ==========
     const supabaseUrl = 'https://hsbrbfndgrxmhssfqyuo.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYnJiZm5kZ3J4bWhzc2ZxeXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDg4NjksImV4cCI6MjA4ODIyNDg2OX0.TW1avreYkB80OiK-3Yu-BazXHN0PHaFZUpa2M9MmWZs';
@@ -851,21 +858,19 @@
     console.log('🚀 База данных Geekpy:', geekpyDB ? '✅' : '❌');
 
     // ========== ФОН С ТОЧКАМИ ==========
-        const canvas = document.getElementById('networkCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        console.log('Попытка создать канвас...');
-if (!canvas) {
-    console.log('❌ Canvas не найден!');
-    document.body.innerHTML += '<div style="color:red; position:fixed; top:0; left:0; z-index:9999;">Ошибка: Canvas не найден</div>';
-    // Вместо return - просто не запускаем анимацию
-} else {
-    console.log('✅ Canvas найден, размер:', canvas.width, 'x', canvas.height);
-    // Запускаем всё, что связано с канвасом
-    initCanvas(); // Создадим отдельную функцию
-}
+    const canvas = document.getElementById('networkCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    console.log('Попытка создать канвас...');
+    if (!canvas) {
+        console.log('❌ Canvas не найден!');
+        document.body.innerHTML += '<div style="color:red; position:fixed; top:0; left:0; z-index:9999;">Ошибка: Canvas не найден</div>';
+    } else {
+        console.log('✅ Canvas найден, размер:', canvas.width, 'x', canvas.height);
+        initCanvas();
+    }
 
-        function initCanvas() {
+    function initCanvas() {
         const lineColor = '#60a5fa';
         const lineColor2 = '#c084fc';
 
@@ -957,7 +962,7 @@ if (!canvas) {
         }
 
         animate();
-        }
+    }
         
     // ========== ФУНКЦИИ ==========
     async function saveProgressToDB() {
@@ -1140,8 +1145,9 @@ if (!canvas) {
         // Загружаем данные
         loadUserData();
     });
-    </script>
+</script>
 </body>
 </html>
+
 
 
