@@ -109,15 +109,42 @@
             width: 100%;
             transition: opacity 0.3s ease;
             margin-bottom: 12px;
+            animation: cardAppear 0.4s ease-out;
         }
+        
+        @keyframes cardAppear {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
+        @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+        
         .glass:last-child {
             margin-bottom: 0;
         }
 
-        /* Скрываем страницы */
+        /* Плавное появление страниц */
         .page {
             display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .page.active {
@@ -195,7 +222,7 @@
             width: 60%;
             background: linear-gradient(90deg, #60a5fa, #c084fc);
             border-radius: 3px;
-            transition: width 0.3s ease;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* Уравнение */
@@ -271,6 +298,11 @@
             white-space: nowrap;
             transition: all 0.2s;
             backdrop-filter: blur(8px);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); /* более плавная кривая */
+        }
+
+        .btn:active {
+            transform: scale(0.96); /* кнопка чуть сжимается при нажатии */
         }
 
         .btn-primary {
@@ -281,6 +313,8 @@
 
         .btn-primary:hover {
             background: rgba(96, 165, 250, 0.5);
+            transform: translateY(-2px);     /* чуть приподнимается */
+            box-shadow: 0 8px 20px rgba(96, 165, 250, 0.4);
         }
 
         .btn-outline {
@@ -302,7 +336,13 @@
             display: flex;
             gap: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s;
+            transition: background 0.3s ease, border-color 0.3s ease, opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .hint.hidden {
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
         }
 
         .hint-icon {
@@ -321,6 +361,15 @@
             color: #60a5fa;
         }
 
+        .equation, .progress-fill, .stat-value {
+            transition: all 0.3s ease;
+        }
+
+        /* Добавь класс для анимации изменения */
+        .equation {
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        
         /* Статистика */
         .stats {
             display: grid;
@@ -1043,15 +1092,24 @@
     }
 
     function updateUI() {
+        const equationEl = document.getElementById('equation');
+        equationEl.style.opacity = '0';
+        equationEl.style.transform = 'scale(0.98)';
         document.getElementById('topicName').textContent = userData.currentTopic;
         document.getElementById('progressText').textContent = `${userData.currentExercise + 1}/${userData.examples.length}`;
-        document.getElementById('equation').textContent = userData.examples[userData.currentExample];
         document.getElementById('statsAccuracy').textContent = userData.progress.accuracy + '%';
         document.getElementById('statsSolved').textContent = userData.progress.solved;
         document.getElementById('statsMistakes').textContent = userData.progress.mistakes;
         document.getElementById('profileName').textContent = userData.name;
         document.getElementById('avatarInitials').textContent = userData.name.charAt(0);
         document.getElementById('profileInitials').textContent = userData.name.charAt(0);
+
+        setTimeout(() => {
+            // Тут обновляем текст
+            equationEl.textContent = userData.examples[userData.currentExample];
+            equationEl.style.opacity = '1';
+            equationEl.style.transform = 'scale(1)';
+        }, 100);
     }
 
     // ========== ИНИЦИАЛИЗАЦИЯ ПОСЛЕ ЗАГРУЗКИ DOM ==========
@@ -1078,6 +1136,12 @@
             if (parseInt(answer) === correct) {
                 hintText.innerHTML = '✅ Верно!';
                 hintBox.style.background = 'rgba(34, 197, 94, 0.1)';
+                hintBox.style.animation = 'pulse 0.5s ease';
+
+                setTimeout(() => {
+                    hintBox.style.animation = '';
+                }, 500);
+                
             } else {
                 hintText.innerHTML = '❌ Неправильно';
                 hintBox.style.background = 'rgba(239, 68, 68, 0.1)';
@@ -1148,6 +1212,7 @@
 </script>
 </body>
 </html>
+
 
 
 
