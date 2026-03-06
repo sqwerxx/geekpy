@@ -852,45 +852,83 @@
     let telegramUser = null;
     let TELEGRAM_ID = null;
 
-    // ========== ОСНОВНЫЕ ДАННЫЕ (ПЕРЕНЁС НАВЕРХ, ЧТОБЫ БЫЛО ДОСТУПНО ВЕЗДЕ) ==========
-    let userData = {
+   // ========== ОСНОВНЫЕ ДАННЫЕ ==========
+let userData = {
     name: 'Ученик',
     avatar: null,
     currentTopic: 'Линейные уравнения',
-    currentExercise: 2,
-    currentExample: 0,
     canProceed: false,
     
-    // Примеры и ответы для текущей темы
-    examples: ['2x + 5 = 15', '3x - 7 = 11', '4x + 8 = 20', '5x - 3 = 22', '6x + 4 = 28'],
-    answers: [5, 6, 3, 5, 4],
+    // ===== БАНК ИЗ 30 ПРИМЕРОВ (ТОЛЬКО ЦЕЛЫЕ) =====
+    exampleBank: [
+        { eq: 'x + 2 = 5', ans: 3 },
+        { eq: 'x - 3 = 7', ans: 10 },
+        { eq: '2x = 8', ans: 4 },
+        { eq: 'x + 5 = 10', ans: 5 },
+        { eq: 'x - 1 = 4', ans: 5 },
+        { eq: '3x = 12', ans: 4 },
+        { eq: 'x + 7 = 15', ans: 8 },
+        { eq: 'x - 5 = 2', ans: 7 },
+        { eq: '4x = 20', ans: 5 },
+        { eq: 'x + 9 = 14', ans: 5 },
+        { eq: 'x - 8 = 1', ans: 9 },
+        { eq: '5x = 25', ans: 5 },
+        { eq: 'x + 3 = 11', ans: 8 },
+        { eq: 'x - 2 = 6', ans: 8 },
+        { eq: '6x = 30', ans: 5 },
+        { eq: 'x + 4 = 9', ans: 5 },
+        { eq: 'x - 6 = 3', ans: 9 },
+        { eq: '7x = 35', ans: 5 },
+        { eq: 'x + 8 = 12', ans: 4 },
+        { eq: 'x - 4 = 5', ans: 9 },
+        { eq: '8x = 40', ans: 5 },
+        { eq: 'x + 6 = 13', ans: 7 },
+        { eq: 'x - 7 = 2', ans: 9 },
+        { eq: '9x = 45', ans: 5 },
+        { eq: 'x + 1 = 9', ans: 8 },
+        { eq: 'x - 9 = 1', ans: 10 },
+        { eq: '10x = 50', ans: 5 },
+        { eq: 'x + 10 = 18', ans: 8 },
+        { eq: 'x - 10 = 5', ans: 15 },
+        { eq: '2x + 1 = 9', ans: 4 }
+    ],
     
+    // ===== ТЕКУЩИЙ УРОК (5 СЛУЧАЙНЫХ) =====
+    currentLesson: [],
+    
+    // ===== ТЕКУЩИЙ ИНДЕКС В УРОКЕ =====
+    currentIndex: 0,
+    
+    // ===== ПРОГРЕСС =====
     progress: {
-        accuracy: 85,
-        solved: 12,
-        mistakes: 3
+        accuracy: 0,
+        solved: 0,
+        mistakes: 0
     },
     
-    // Список всех тем
+    // ===== СПИСОК ТЕМ (ПОКА ОДНА) =====
     topics: [
         { 
             name: 'Линейные уравнения', 
-            progress: '8/10', 
-            accuracy: '85%', 
-            status: 'в процессе',
-            examples: ['2x + 5 = 15', '3x - 7 = 11', '4x + 8 = 20', '5x - 3 = 22', '6x + 4 = 28'],
-            answers: [5, 6, 3, 5, 4]
-        },
-        { 
-            name: 'Квадратные уравнения', 
-            progress: '0/10', 
+            progress: '0/5', 
             accuracy: '0%', 
-            status: 'доступно',
-            examples: ['x² - 5x + 6 = 0', 'x² + 3x - 4 = 0', '2x² - 4x - 6 = 0', 'x² - 6x + 9 = 0', '3x² + 5x - 2 = 0'],
-            answers: ['2,3', '-4,1', '-1,3', '3', '-2,0.333']  // Ответы через запятую
+            status: 'в процессе'
         }
     ]
 };
+
+    // ========== НОВЫЙ УРОК (5 СЛУЧАЙНЫХ) ==========
+function newLesson() {
+    // Перемешиваем банк и берём первые 5
+    const shuffled = [...userData.exampleBank].sort(() => 0.5 - Math.random());
+    userData.currentLesson = shuffled.slice(0, 5);
+    
+    // Сбрасываем индекс
+    userData.currentIndex = 0;
+    userData.canProceed = false;
+    
+    console.log('🎲 Новый урок:', userData.currentLesson);
+}
 
     function selectTopic(topicName) {
     const topic = userData.topics.find(t => t.name === topicName);
@@ -1133,15 +1171,21 @@
     }
 
     function loadUserData() {
-        const saved = localStorage.getItem('geekpy_user');
-        if (saved) {
-            try {
-                userData = JSON.parse(saved);
-            } catch (e) { }
-        }
-        updateUI();
-        if (TELEGRAM_ID) ensureUserExists();
+    const saved = localStorage.getItem('geekpy_user');
+    if (saved) {
+        try {
+            userData = JSON.parse(saved);
+        } catch (e) { }
     }
+    
+    // Если нет текущего урока — создаём
+    if (userData.currentLesson.length === 0) {
+        newLesson();
+    }
+    
+    updateUI();
+    if (TELEGRAM_ID) ensureUserExists();
+}
 
     function saveUserData() {
         localStorage.setItem('geekpy_user', JSON.stringify(userData));
@@ -1149,18 +1193,26 @@
 
 function updateUI() {
     const equationEl = document.getElementById('equation');
+    const current = userData.currentLesson[userData.currentIndex];
+    
+    if (!current) return;
+    
     equationEl.style.opacity = '0';
     equationEl.style.transform = 'scale(0.98)';
+    
     document.getElementById('topicName').textContent = userData.currentTopic;
-    document.getElementById('progressText').textContent = `${userData.currentExercise + 1}/${userData.examples.length}`;
+    document.getElementById('progressText').textContent = 
+        `${userData.currentIndex + 1}/${userData.currentLesson.length}`;
+    
     document.getElementById('statsAccuracy').textContent = userData.progress.accuracy + '%';
     document.getElementById('statsSolved').textContent = userData.progress.solved;
     document.getElementById('statsMistakes').textContent = userData.progress.mistakes;
+    
     document.getElementById('profileName').textContent = userData.name;
     document.getElementById('avatarInitials').textContent = userData.name.charAt(0);
     document.getElementById('profileInitials').textContent = userData.name.charAt(0);
 
-    // При обновлении страницы блокируем кнопку "Далее"
+    // Блокируем кнопку "Далее"
     const nextBtn = document.getElementById('nextBtn');
     nextBtn.disabled = true;
     nextBtn.style.opacity = '0.5';
@@ -1168,10 +1220,11 @@ function updateUI() {
     userData.canProceed = false;
 
     setTimeout(() => {
-        equationEl.textContent = userData.examples[userData.currentExample];
+        equationEl.textContent = current.eq;
         equationEl.style.opacity = '1';
         equationEl.style.transform = 'scale(1)';
     }, 100);
+    
     updateTopicsList();
 }
 
@@ -1222,7 +1275,7 @@ function updateTopicsList() {
         // ========== ПРОВЕРКА ОТВЕТА ==========
         document.getElementById('checkBtn').addEventListener('click', () => {
             const answer = document.getElementById('answerInput').value;
-            const correct = userData.answers[userData.currentExample];
+            const correct = userData.currentLesson[userData.currentIndex].ans;
             const hintBox = document.getElementById('hintBox');
             const hintText = document.getElementById('hintText');
             const nextBtn = document.getElementById('nextBtn');
@@ -1255,13 +1308,17 @@ function updateTopicsList() {
 });
 
         document.getElementById('nextBtn').addEventListener('click', () => {
-            if (!userData.canProceed) return;  // ← если нельзя — выходим
+    if (!userData.canProceed) return;
     
-    if (userData.currentExample < userData.examples.length - 1) {
-        userData.currentExample++;
+    if (userData.currentIndex < userData.currentLesson.length - 1) {
+        // Ещё есть примеры в этом уроке
+        userData.currentIndex++;
+    } else {
+        // Урок закончен — начинаем новый
+        newLesson();
     }
     
-    // Сбрасываем флаг — новый пример нужно решать заново
+    // Сбрасываем флаг
     userData.canProceed = false;
     const nextBtn = document.getElementById('nextBtn');
     nextBtn.disabled = true;
@@ -1277,7 +1334,7 @@ function updateTopicsList() {
     saveUserData();
     saveProgressToDB();
 });
-
+        
         // ========== АВАТАР ==========
         document.getElementById('avatarUpload').addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -1330,15 +1387,3 @@ function updateTopicsList() {
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
