@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -172,6 +172,7 @@
         .logo {
             font-size: 26px;
             font-weight: 700;
+            font-family: 'Google Sans Code', 'Fira Code', monospace;
             background: linear-gradient(135deg, #60a5fa, #c084fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -695,7 +696,7 @@
                     <span id="progressText">3/5</span>
                 </div>
                 <div class="progress-bar">
-                    <div id="progressFill" class="progress-fill" style="width: 60%;"></div>
+                    <div id="progressFill" class="progress-fill"></div>
                 </div>
 
                 <div class="equation-box">
@@ -1254,6 +1255,9 @@ function selectTopic(topicName) {
         document.getElementById('topicName').textContent = userData.currentTopic;
         document.getElementById('progressText').textContent = 
             `${userData.currentIndex + 1}/${userData.currentLesson.length}`;
+
+        const progressPercent = (userData.currentIndex / userData.currentLesson.length) * 100;
+        document.getElementById('progressFill').style.width = progressPercent + '%';
         
         document.getElementById('statsAccuracy').textContent = userData.progress.accuracy + '%';
         document.getElementById('statsSolved').textContent = userData.progress.solved;
@@ -1411,6 +1415,7 @@ function selectTopic(topicName) {
 </script>
 </body>
 </html>
+
 
 
 
