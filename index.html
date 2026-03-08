@@ -716,9 +716,7 @@
 
                 <div id="hintBox" class="hint">
                     <span class="material-symbols-outlined hint-icon">lightbulb</span>
-                    <div id="hintText" class="hint-text">
-                        <strong>Подсказка:</strong> Перенеси 5 в правую часть
-                    </div>
+                    <div id="hintText" class="hint-text"></div>
                 </div>
             </div>
         </div>
@@ -749,22 +747,7 @@
                     <span class="material-symbols-outlined" style="color: #60a5fa;">error</span> Типичные ошибки
                 </div>
 
-                <div id="mistakesList">
-                    <div class="topic">
-                        <div class="topic-icon">⚠️</div>
-                        <div class="topic-info">
-                            <div class="topic-name">Ошибка в знаках</div>
-                            <div class="topic-meta">3 раза</div>
-                        </div>
-                    </div>
-                    <div class="topic">
-                        <div class="topic-icon">🔢</div>
-                        <div class="topic-info">
-                            <div class="topic-name">Арифметика</div>
-                            <div class="topic-meta">2 раза</div>
-                        </div>
-                    </div>
-                </div>
+                <div id="mistakesList"></div>
             </div>
         </div>
 
@@ -807,14 +790,14 @@
                     <div id="themeToggle" class="toggle active"></div>
                 </div>
 
-                <div class="settings-item">
+                <!-- <div class="settings-item">
                     <div class="settings-label">
                         <span class="material-symbols-outlined" style="color: #60a5fa;">notifications</span>
                         Уведомления
                     </div>
                     <div id="notifyToggle" class="toggle"></div>
-                </div>
-
+                </div> -->
+                
                 <div class="settings-item">
                     <div class="settings-label">
                         <span class="material-symbols-outlined" style="color: #60a5fa;">delete</span>
@@ -919,14 +902,10 @@ let userData = {
 
     // ========== НОВЫЙ УРОК (5 СЛУЧАЙНЫХ) ==========
 function newLesson() {
-    // Перемешиваем банк и берём первые 5
     const shuffled = [...userData.exampleBank].sort(() => 0.5 - Math.random());
     userData.currentLesson = shuffled.slice(0, 5);
-    
-    // Сбрасываем индекс
     userData.currentIndex = 0;
     userData.canProceed = false;
-    
     console.log('🎲 Новый урок:', userData.currentLesson);
 }
 
@@ -935,12 +914,12 @@ function selectTopic(topicName) {
     if (!topic) return;
     
     userData.currentTopic = topic.name;
-    newLesson();  // создаём новый урок для этой темы
+    newLesson();
     userData.canProceed = false;
     
     updateUI();
     saveUserData();
-    saveProgressToDB(); // сразу сохраняем в облако
+    saveProgressToDB();
 }
 
     if (window.Telegram && window.Telegram.WebApp) {
@@ -959,25 +938,20 @@ function selectTopic(topicName) {
             
             console.log('✅ Пользователь Telegram:', telegramUser.first_name, 'ID:', TELEGRAM_ID);
             
-            // Обновляем данные пользователя в приложении
             userData.name = telegramUser.first_name || 'Ученик';
             
-            // Загружаем фото, если есть
             if (telegramUser.photo_url) {
                 userData.avatar = telegramUser.photo_url;
                 
-                // В шапке
                 document.getElementById('avatarImage').src = telegramUser.photo_url;
                 document.getElementById('avatarImage').style.display = 'block';
                 document.getElementById('avatarInitials').style.display = 'none';
                 
-                // В профиле
                 document.getElementById('profileImage').src = telegramUser.photo_url;
                 document.getElementById('profileImage').style.display = 'block';
                 document.getElementById('profileInitials').style.display = 'none';
             }
             
-            // Обновляем интерфейс
             updateUI();
         } else {
             console.log('⚠️ Не удалось получить данные пользователя Telegram');
@@ -1011,7 +985,6 @@ function selectTopic(topicName) {
     function initCanvas() {
         const lineColor = '#60a5fa';
         const lineColor2 = '#c084fc';
-
         let points = [];
 
         function getPointsCount() {
@@ -1038,7 +1011,7 @@ function selectTopic(topicName) {
                 });
             }
         }
-
+        
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -1102,59 +1075,70 @@ function selectTopic(topicName) {
         animate();
     }
         
-    // ========== ФУНКЦИИ ==========
-    async function loadProgressFromDB() {
-    if (!TELEGRAM_ID) return;
+    // ========== ФУНКЦИИ БАЗЫ ДАННЫХ ==========
+    async function saveProgressToDB() {
+        if (!TELEGRAM_ID) {
+            console.log('⚠️ Нет Telegram ID, пропускаем сохранение');
+            return;
+        }
 
-    const { data, error } = await geekpyDB
-        .from('progress')
-        .select('*')
-        .eq('user_id', TELEGRAM_ID);
+        const { error } = await geekpyDB
+            .from('progress')
+            .upsert({
+                user_id: TELEGRAM_ID,
+                topic_name: userData.currentTopic,
+                current_index: userData.currentIndex,
+                current_lesson: JSON.stringify(userData.currentLesson),
+                solved: userData.progress.solved,
+                mistakes: userData.progress.mistakes,
+                accuracy: userData.progress.accuracy,
+                updated_at: new Date()
+            });
 
-    if (error) {
-        console.error('❌ Ошибка загрузки:', error);
-        return;
+        if (error) console.error('❌ Ошибка сохранения:', error);
+        else console.log('✅ Прогресс сохранён в облако');
     }
 
-    if (data && data.length > 0) {
-        const prog = data[0]; // берём первую запись (по идее она одна)
+    async function loadProgressFromDB() {
+        if (!TELEGRAM_ID) return;
 
-        console.log('📥 Загружено из облака:', prog);
+        const { data, error } = await geekpyDB
+            .from('progress')
+            .select('*')
+            .eq('user_id', TELEGRAM_ID);
 
-        // Восстанавливаем тему
-        if (prog.topic_name) {
-            userData.currentTopic = prog.topic_name;
+        if (error) {
+            console.error('❌ Ошибка загрузки:', error);
+            return;
         }
 
-        // Восстанавливаем индекс
-        if (prog.current_index !== undefined) {
-            userData.currentIndex = prog.current_index;
-        }
+        if (data && data.length > 0) {
+            const prog = data[0];
+            console.log('📥 Загружено из облака:', prog);
 
-        // Восстанавливаем урок (если сохранён)
-        if (prog.current_lesson) {
-            try {
-                userData.currentLesson = JSON.parse(prog.current_lesson);
-            } catch (e) {
-                console.warn('⚠️ Не удалось распарсить урок, создаём новый');
+            if (prog.topic_name) userData.currentTopic = prog.topic_name;
+            if (prog.current_index !== undefined) userData.currentIndex = prog.current_index;
+            
+            if (prog.current_lesson) {
+                try {
+                    userData.currentLesson = JSON.parse(prog.current_lesson);
+                } catch (e) {
+                    console.warn('⚠️ Ошибка парсинга урока, создаём новый');
+                    newLesson();
+                }
+            } else {
                 newLesson();
             }
+
+            if (prog.solved !== undefined) userData.progress.solved = prog.solved;
+            if (prog.mistakes !== undefined) userData.progress.mistakes = prog.mistakes;
+            if (prog.accuracy !== undefined) userData.progress.accuracy = prog.accuracy;
+
+            updateUI();
         } else {
             newLesson();
         }
-
-        // Восстанавливаем статистику
-        if (prog.solved !== undefined) userData.progress.solved = prog.solved;
-        if (prog.mistakes !== undefined) userData.progress.mistakes = prog.mistakes;
-        if (prog.accuracy !== undefined) userData.progress.accuracy = prog.accuracy;
-
-        // Обновляем интерфейс
-        updateUI();
-    } else {
-        // Если прогресса нет — создаём новый урок
-        newLesson();
     }
-}
 
     async function ensureUserExists() {
         if (!TELEGRAM_ID) return;
@@ -1185,103 +1169,123 @@ function selectTopic(topicName) {
     }
 
     function loadUserData() {
-    const saved = localStorage.getItem('geekpy_user');
-    if (saved) {
-        try {
-            userData = JSON.parse(saved);
-        } catch (e) { }
-    }
+        const saved = localStorage.getItem('geekpy_user');
+        if (saved) {
+            try {
+                userData = JSON.parse(saved);
+            } catch (e) { }
+        }
 
-    // Если нет локального урока — создаём
-    if (!userData.currentLesson || userData.currentLesson.length === 0) {
-        newLesson();
-    }
+        if (!userData.currentLesson || userData.currentLesson.length === 0) {
+            newLesson();
+        }
 
-    updateUI();
+        updateUI();
 
-    // Загружаем с сервера (перезапишет локальное, если есть)
-    if (TELEGRAM_ID) {
-        ensureUserExists();
-        loadProgressFromDB();  // ← вот это ключевое!
+        if (TELEGRAM_ID) {
+            ensureUserExists();
+            loadProgressFromDB();
+        }
     }
-}
 
     function saveUserData() {
         localStorage.setItem('geekpy_user', JSON.stringify(userData));
     }
 
-function updateUI() {
-    const equationEl = document.getElementById('equation');
-    const current = userData.currentLesson[userData.currentIndex];
-    
-    if (!current) return;
-    
-    equationEl.style.opacity = '0';
-    equationEl.style.transform = 'scale(0.98)';
-    
-    document.getElementById('topicName').textContent = userData.currentTopic;
-    document.getElementById('progressText').textContent = 
-        `${userData.currentIndex + 1}/${userData.currentLesson.length}`;
-    
-    document.getElementById('statsAccuracy').textContent = userData.progress.accuracy + '%';
-    document.getElementById('statsSolved').textContent = userData.progress.solved;
-    document.getElementById('statsMistakes').textContent = userData.progress.mistakes;
-    
-    document.getElementById('profileName').textContent = userData.name;
-    document.getElementById('avatarInitials').textContent = userData.name.charAt(0);
-    document.getElementById('profileInitials').textContent = userData.name.charAt(0);
+    function getHint(equation) {
+        if (equation.includes('+')) {
+            let parts = equation.split('+');
+            return `Перенеси ${parts[1].split('=')[0].trim()} в правую часть с противоположным знаком`;
+        }
+        if (equation.includes('-')) {
+            let parts = equation.split('-');
+            return `Перенеси ${parts[1].split('=')[0].trim()} в правую часть, меняя знак на +`;
+        }
+        if (equation.includes('x')) {
+            return `Раздели обе части на коэффициент перед x`;
+        }
+        return 'Реши уравнение';
+    }
 
-    // Блокируем кнопку "Далее"
-    const nextBtn = document.getElementById('nextBtn');
-    nextBtn.disabled = true;
-    nextBtn.style.opacity = '0.5';
-    nextBtn.style.pointerEvents = 'none';
-    userData.canProceed = false;
+    function updateMistakesList() {
+        const mistakesList = document.getElementById('mistakesList');
+        if (!mistakesList) return;
+        mistakesList.innerHTML = '';
+        // Здесь будет логика реальных ошибок
+    }
 
-    setTimeout(() => {
-        equationEl.textContent = current.eq;
-        equationEl.style.opacity = '1';
-        equationEl.style.transform = 'scale(1)';
-    }, 100);
-    
-    updateTopicsList();
-}
-
-// ========== ЭТА ФУНКЦИЯ ДОЛЖНА БЫТЬ ЗДЕСЬ, ПОСЛЕ updateUI ==========
-function updateTopicsList() {
-    const topicsList = document.getElementById('topicsList');
-    if (!topicsList) return;
-    
-    topicsList.innerHTML = '';
-    
-    userData.topics.forEach(topic => {
-        const topicElement = document.createElement('div');
-        topicElement.className = 'topic';
-        topicElement.innerHTML = `
-            <div class="topic-icon">📚</div>
-            <div class="topic-info">
-                <div class="topic-name">${topic.name}</div>
-                <div class="topic-meta">${topic.progress} • ${topic.accuracy}</div>
-            </div>
-            <div class="topic-status">${topic.status}</div>
-        `;
+    function updateTopicsList() {
+        const topicsList = document.getElementById('topicsList');
+        if (!topicsList) return;
         
-        // Клик по теме
-        topicElement.addEventListener('click', () => {
-            if (topic.status === 'доступно' || topic.status === 'в процессе') {
-                selectTopic(topic.name);
-            }
+        topicsList.innerHTML = '';
+        
+        userData.topics.forEach(topic => {
+            const topicElement = document.createElement('div');
+            topicElement.className = 'topic';
+            topicElement.innerHTML = `
+                <div class="topic-icon">📚</div>
+                <div class="topic-info">
+                    <div class="topic-name">${topic.name}</div>
+                    <div class="topic-meta">${topic.progress} • ${topic.accuracy}</div>
+                </div>
+                <div class="topic-status">${topic.status}</div>
+            `;
+            
+            topicElement.addEventListener('click', () => {
+                if (topic.status === 'доступно' || topic.status === 'в процессе') {
+                    selectTopic(topic.name);
+                }
+            });
+            
+            topicsList.appendChild(topicElement);
         });
+    }
+
+    function updateUI() {
+        const current = userData.currentLesson[userData.currentIndex];
+        if (!current) return;
+
+        const equationEl = document.getElementById('equation');
         
-        topicsList.appendChild(topicElement);
-    });
-}
+        equationEl.style.opacity = '0';
+        equationEl.style.transform = 'scale(0.98)';
+        
+        document.getElementById('topicName').textContent = userData.currentTopic;
+        document.getElementById('progressText').textContent = 
+            `${userData.currentIndex + 1}/${userData.currentLesson.length}`;
+        
+        document.getElementById('statsAccuracy').textContent = userData.progress.accuracy + '%';
+        document.getElementById('statsSolved').textContent = userData.progress.solved;
+        document.getElementById('statsMistakes').textContent = userData.progress.mistakes;
+        
+        document.getElementById('profileName').textContent = userData.name;
+        document.getElementById('avatarInitials').textContent = userData.name.charAt(0);
+        document.getElementById('profileInitials').textContent = userData.name.charAt(0);
+
+        const nextBtn = document.getElementById('nextBtn');
+        nextBtn.disabled = true;
+        nextBtn.style.opacity = '0.5';
+        nextBtn.style.pointerEvents = 'none';
+        userData.canProceed = false;
+
+        const hintEl = document.getElementById('hintText');
+        hintEl.innerHTML = `<strong>Подсказка:</strong> ${getHint(current.eq)}`;
+
+        setTimeout(() => {
+            equationEl.textContent = current.eq;
+            equationEl.style.opacity = '1';
+            equationEl.style.transform = 'scale(1)';
+        }, 100);
+        
+        updateTopicsList();
+        updateMistakesList();
+    }
 
     // ========== ИНИЦИАЛИЗАЦИЯ ПОСЛЕ ЗАГРУЗКИ DOM ==========
     document.addEventListener('DOMContentLoaded', function() {
         console.log('✅ DOM загружен, начинаем навешивать события');
 
-        // ========== НАВИГАЦИЯ ==========
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', () => {
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -1291,7 +1295,6 @@ function updateTopicsList() {
             });
         });
 
-        // ========== ПРОВЕРКА ОТВЕТА ==========
         document.getElementById('checkBtn').addEventListener('click', () => {
             const answer = document.getElementById('answerInput').value;
             const correct = userData.currentLesson[userData.currentIndex].ans;
@@ -1300,61 +1303,62 @@ function updateTopicsList() {
             const nextBtn = document.getElementById('nextBtn');
             
             if (parseInt(answer) === correct) {
-        hintText.innerHTML = '✅ Верно!';
-        hintBox.style.background = 'rgba(34, 197, 94, 0.1)';
-        hintBox.style.animation = 'pulse 0.5s ease';
-        
-        // ✅ РАЗБЛОКИРУЕМ КНОПКУ
-        userData.canProceed = true;
-        nextBtn.disabled = false;
-        nextBtn.style.opacity = '1';
-        nextBtn.style.pointerEvents = 'auto';
+                userData.progress.solved++;
+                hintText.innerHTML = '✅ Верно!';
+                hintBox.style.background = 'rgba(34, 197, 94, 0.1)';
+                hintBox.style.animation = 'pulse 0.5s ease';
+                
+                userData.canProceed = true;
+                nextBtn.disabled = false;
+                nextBtn.style.opacity = '1';
+                nextBtn.style.pointerEvents = 'auto';
 
                 setTimeout(() => {
                     hintBox.style.animation = '';
                 }, 500);
-                
             } else {
-        hintText.innerHTML = '❌ Неправильно';
-        hintBox.style.background = 'rgba(239, 68, 68, 0.1)';
-        
-        // ❌ БЛОКИРУЕМ (на всякий случай)
-        userData.canProceed = false;
-        nextBtn.disabled = true;
-        nextBtn.style.opacity = '0.5';
-        nextBtn.style.pointerEvents = 'none';
-    }
-});
+                userData.progress.mistakes++;
+                hintText.innerHTML = '❌ Неправильно';
+                hintBox.style.background = 'rgba(239, 68, 68, 0.1)';
+                
+                userData.canProceed = false;
+                nextBtn.disabled = true;
+                nextBtn.style.opacity = '0.5';
+                nextBtn.style.pointerEvents = 'none';
+            }
+
+            const total = userData.progress.solved + userData.progress.mistakes;
+            userData.progress.accuracy = total === 0 ? 0 : Math.round((userData.progress.solved / total) * 100);
+            
+            document.getElementById('statsAccuracy').textContent = userData.progress.accuracy + '%';
+            document.getElementById('statsSolved').textContent = userData.progress.solved;
+            document.getElementById('statsMistakes').textContent = userData.progress.mistakes;
+        });
 
         document.getElementById('nextBtn').addEventListener('click', () => {
-    if (!userData.canProceed) return;
-    
-    if (userData.currentIndex < userData.currentLesson.length - 1) {
-        // Ещё есть примеры в этом уроке
-        userData.currentIndex++;
-    } else {
-        // Урок закончен — начинаем новый
-        newLesson();
-    }
-    
-    // Сбрасываем флаг
-    userData.canProceed = false;
-    const nextBtn = document.getElementById('nextBtn');
-    nextBtn.disabled = true;
-    nextBtn.style.opacity = '0.5';
-    nextBtn.style.pointerEvents = 'none';
-    
-    // Очищаем поле и подсказку
-    document.getElementById('answerInput').value = '';
-    document.getElementById('hintBox').style.background = 'rgba(255, 255, 255, 0.05)';
-    document.getElementById('hintText').innerHTML = 'Введи ответ';
-    
-    updateUI();
-    saveUserData();
-    saveProgressToDB();
-});
+            if (!userData.canProceed) return;
+            
+            if (userData.currentIndex < userData.currentLesson.length - 1) {
+                userData.currentIndex++;
+            } else {
+                newLesson();
+            }
+            
+            userData.canProceed = false;
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.disabled = true;
+            nextBtn.style.opacity = '0.5';
+            nextBtn.style.pointerEvents = 'none';
+            
+            document.getElementById('answerInput').value = '';
+            document.getElementById('hintBox').style.background = 'rgba(255, 255, 255, 0.05)';
+            document.getElementById('hintText').innerHTML = 'Введи ответ';
+            
+            updateUI();
+            saveUserData();
+            saveProgressToDB();
+        });
         
-        // ========== АВАТАР ==========
         document.getElementById('avatarUpload').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -1375,7 +1379,6 @@ function updateTopicsList() {
             document.getElementById('avatarUpload').click();
         });
 
-        // ========== РЕДАКТИРОВАНИЕ ИМЕНИ ==========
         document.getElementById('editNameBtn').addEventListener('click', () => {
             const input = document.getElementById('nameInput');
             input.style.display = 'block';
@@ -1392,7 +1395,6 @@ function updateTopicsList() {
             }
         });
 
-        // ========== СБРОС ==========
         document.getElementById('resetBtn').addEventListener('click', () => {
             if (confirm('Сбросить прогресс?')) {
                 localStorage.removeItem('geekpy_user');
@@ -1400,9 +1402,9 @@ function updateTopicsList() {
             }
         });
 
-        // Загружаем данные
         loadUserData();
     });
 </script>
 </body>
 </html>
+
