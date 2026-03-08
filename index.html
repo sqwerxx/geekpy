@@ -529,7 +529,7 @@
             </div>
         </div>
 
-        <!-- ========== СТРАНИЦА 2: УРОК (будет показана после старта) ========== -->
+        <!-- ========== СТРАНИЦА 2: УРОК ========== -->
         <div id="pageLesson" class="page">
             <div class="glass">
                 <div class="progress-header">
@@ -651,7 +651,7 @@
             <div class="nav-item" data-page="stats">
                 <span class="material-symbols-outlined">insights</span>
             </div>
-            <div class="nav-item" data-page="lesson">
+            <div class="nav-item" data-page="topics">
                 <span class="material-symbols-outlined">menu_book</span>
             </div>
             <div class="nav-item" data-page="profile">
@@ -732,7 +732,12 @@
         saveProgressToDB();
         
         // Переключаем на страницу урока
-        document.querySelector('[data-page="lesson"]').click();
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById('pageLesson').classList.add('active');
+        
+        // Обновляем активный пункт меню
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        // Для урока не подсвечиваем пункт меню (или можно добавить отдельный)
     }
 
     // Telegram
@@ -932,21 +937,9 @@
             <div class="topic-status">${t.status}</div>
         `;
         
-        // ВОТ ИСПРАВЛЕННАЯ ЧАСТЬ - клик по теме
         el.addEventListener('click', () => { 
             if (t.status === 'доступно') {
                 selectTopic(t.name);
-                // Переключаем на страницу урока (pageLesson, а не topics)
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-                document.getElementById('pageLesson').classList.add('active');
-                // Находим и активируем нужный nav-item (если есть для lesson)
-                const lessonNavItem = Array.from(document.querySelectorAll('.nav-item')).find(
-                    item => item.dataset.page === 'lesson'
-                );
-                if (lessonNavItem) {
-                    lessonNavItem.classList.add('active');
-                }
             }
         });
         
@@ -1002,7 +995,15 @@
 
         // Кнопка "Начать урок"
         document.getElementById('startLessonBtn').addEventListener('click', () => {
-            document.querySelector('[data-page="topics"]').click();
+            // Переключаемся на страницу тем
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('pageTopics').classList.add('active');
+            // Активируем пункт меню "темы"
+            const topicsNavItem = Array.from(document.querySelectorAll('.nav-item')).find(
+                item => item.dataset.page === 'topics'
+            );
+            if (topicsNavItem) topicsNavItem.classList.add('active');
         });
 
         // Проверка ответа
@@ -1108,4 +1109,3 @@
 </script>
 </body>
 </html>
-
