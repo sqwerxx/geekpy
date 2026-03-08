@@ -1303,7 +1303,11 @@ function selectTopic(topicName) {
             const nextBtn = document.getElementById('nextBtn');
             
             if (parseInt(answer) === correct) {
-                userData.progress.solved++;
+                // Если кнопка "Далее" ещё заблокирована — значит, это первый правильный ответ
+                if (nextBtn.disabled) {
+                    userData.progress.solved++;  // начисляем только один раз
+                }
+                
                 hintText.innerHTML = '✅ Верно!';
                 hintBox.style.background = 'rgba(34, 197, 94, 0.1)';
                 hintBox.style.animation = 'pulse 0.5s ease';
@@ -1312,7 +1316,7 @@ function selectTopic(topicName) {
                 nextBtn.disabled = false;
                 nextBtn.style.opacity = '1';
                 nextBtn.style.pointerEvents = 'auto';
-
+        
                 setTimeout(() => {
                     hintBox.style.animation = '';
                 }, 500);
@@ -1326,7 +1330,7 @@ function selectTopic(topicName) {
                 nextBtn.style.opacity = '0.5';
                 nextBtn.style.pointerEvents = 'none';
             }
-
+        
             const total = userData.progress.solved + userData.progress.mistakes;
             userData.progress.accuracy = total === 0 ? 0 : Math.round((userData.progress.solved / total) * 100);
             
@@ -1407,4 +1411,5 @@ function selectTopic(topicName) {
 </script>
 </body>
 </html>
+
 
