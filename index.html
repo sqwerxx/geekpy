@@ -930,22 +930,17 @@ function newLesson() {
     console.log('🎲 Новый урок:', userData.currentLesson);
 }
 
-    function selectTopic(topicName) {
+function selectTopic(topicName) {
     const topic = userData.topics.find(t => t.name === topicName);
     if (!topic) return;
     
     userData.currentTopic = topic.name;
-    userData.examples = topic.examples;
-    userData.answers = topic.answers;
-    userData.currentExercise = 2;  // или 0, как хочешь
-    userData.currentExample = 0;
+    newLesson();  // создаём новый урок для этой темы
     userData.canProceed = false;
     
     updateUI();
     saveUserData();
-    
-    // Переключаем на главную
-    document.querySelector('[data-page="home"]').click();
+    saveProgressToDB(); // сразу сохраняем в облако
 }
 
     if (window.Telegram && window.Telegram.WebApp) {
@@ -1108,39 +1103,58 @@ function newLesson() {
     }
         
     // ========== ФУНКЦИИ ==========
-    async function saveProgressToDB() {
-        if (!TELEGRAM_ID) {
-            console.log('⚠️ Нет Telegram ID, пропускаем сохранение');
-            return;
-        }
-
-        const { error } = await geekpyDB
-            .from('progress')
-            .upsert({
-                user_id: TELEGRAM_ID,
-                topic_name: userData.currentTopic,
-                exercise_index: userData.currentExercise,
-                example_index: userData.currentExample,
-                total_attempts: userData.progress.solved + userData.progress.mistakes,
-                correct_answers: userData.progress.solved,
-                accuracy: userData.progress.accuracy
-            });
-
-        if (error) console.error('Ошибка сохранения:', error);
-        else console.log('✅ Прогресс сохранён в облако для пользователя', TELEGRAM_ID);
-    }
-
     async function loadProgressFromDB() {
-        const { data, error } = await geekpyDB
-            .from('progress')
-            .select('*')
-            .eq('user_id', TELEGRAM_ID);
+    if (!TELEGRAM_ID) return;
 
-        if (error) console.error('Ошибка загрузки:', error);
-        else if (data.length > 0) {
-            console.log('📥 Загружено из облака:', data);
-        }
+    const { data, error } = await geekpyDB
+        .from('progress')
+        .select('*')
+        .eq('user_id', TELEGRAM_ID);
+
+    if (error) {
+        console.error('❌ Ошибка загрузки:', error);
+        return;
     }
+
+    if (data && data.length > 0) {
+        const prog = data[0]; // берём первую запись (по идее она одна)
+
+        console.log('📥 Загружено из облака:', prog);
+
+        // Восстанавливаем тему
+        if (prog.topic_name) {
+            userData.currentTopic = prog.topic_name;
+        }
+
+        // Восстанавливаем индекс
+        if (prog.current_index !== undefined) {
+            userData.currentIndex = prog.current_index;
+        }
+
+        // Восстанавливаем урок (если сохранён)
+        if (prog.current_lesson) {
+            try {
+                userData.currentLesson = JSON.parse(prog.current_lesson);
+            } catch (e) {
+                console.warn('⚠️ Не удалось распарсить урок, создаём новый');
+                newLesson();
+            }
+        } else {
+            newLesson();
+        }
+
+        // Восстанавливаем статистику
+        if (prog.solved !== undefined) userData.progress.solved = prog.solved;
+        if (prog.mistakes !== undefined) userData.progress.mistakes = prog.mistakes;
+        if (prog.accuracy !== undefined) userData.progress.accuracy = prog.accuracy;
+
+        // Обновляем интерфейс
+        updateUI();
+    } else {
+        // Если прогресса нет — создаём новый урок
+        newLesson();
+    }
+}
 
     async function ensureUserExists() {
         if (!TELEGRAM_ID) return;
@@ -1177,14 +1191,19 @@ function newLesson() {
             userData = JSON.parse(saved);
         } catch (e) { }
     }
-    
-    // Если нет текущего урока — создаём
-    if (userData.currentLesson.length === 0) {
+
+    // Если нет локального урока — создаём
+    if (!userData.currentLesson || userData.currentLesson.length === 0) {
         newLesson();
     }
-    
+
     updateUI();
-    if (TELEGRAM_ID) ensureUserExists();
+
+    // Загружаем с сервера (перезапишет локальное, если есть)
+    if (TELEGRAM_ID) {
+        ensureUserExists();
+        loadProgressFromDB();  // ← вот это ключевое!
+    }
 }
 
     function saveUserData() {
@@ -1387,3 +1406,4 @@ function updateTopicsList() {
 </script>
 </body>
 </html>
+
