@@ -1128,6 +1128,21 @@ let TELEGRAM_ID = null;
     document.addEventListener('DOMContentLoaded', () => {
         console.log('✅ DOM загружен');
 
+            // ========== УСИЛЕННЫЙ КОСТЫЛЬ ДЛЯ TELEGRAM DESKTOP ==========
+    if (isTelegramDesktop) {
+        console.log('💻 Активируем усиленный режим для ПК');
+        
+        // Перезапускаем все обработчики событий
+        setTimeout(() => {
+            document.querySelectorAll('.btn, .nav-item, .topic').forEach(el => {
+                // Удаляем старые обработчики и вешаем новые
+                el.replaceWith(el.cloneNode(true));
+            });
+            // Переинициализируем навигацию
+            location.reload(); // Крайний случай
+        }, 1000);
+    }
+
         // Навигация
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', () => {
@@ -1311,6 +1326,7 @@ if (themeToggle) {
 </script>
 </body>
 </html>
+
 
 
 
