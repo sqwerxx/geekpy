@@ -782,6 +782,18 @@
 <script>
     console.log('Supabase доступен?', typeof window.supabase !== 'undefined' ? '✅' : '❌');
 
+    // ========== КОСТЫЛЬ ДЛЯ TELEGRAM DESKTOP ==========
+if (navigator.userAgent.includes('Telegram') && !/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+    console.log('💻 Telegram Desktop detected — применяем костыли');
+    // Принудительно обновляем страницу после загрузки
+    setTimeout(() => {
+        document.body.style.transform = 'scale(1.01)';
+        setTimeout(() => {
+            document.body.style.transform = 'scale(1)';
+        }, 50);
+    }, 500);
+}
+
     let telegramUser = null;
     let TELEGRAM_ID = null;
 
@@ -1284,5 +1296,6 @@ if (themeToggle) {
 </script>
 </body>
 </html>
+
 
 
