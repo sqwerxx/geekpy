@@ -666,12 +666,15 @@
 
                 <input id="answerInput" class="input" type="text" placeholder="Введи ответ" value="">
 
-                <div class="buttons">
+                <div class="buttons" style="flex-wrap: wrap;">
                     <button id="checkBtn" class="btn btn-outline">
                         <span class="material-symbols-outlined">check</span> Проверить
                     </button>
                     <button id="nextBtn" class="btn btn-primary">
                         Далее <span class="material-symbols-outlined">arrow_forward</span>
+                    </button>
+                    <button id="aiHelpBtn" class="btn btn-outline" style="margin-top: 10px; width: 100%;">
+                        <span class="material-symbols-outlined">auto_awesome</span> Спросить ИИ
                     </button>
                 </div>
 
@@ -840,21 +843,21 @@ let TELEGRAM_ID = null;
         ]
     };
 
+// ========== ИИ-ПОМОЩНИК ==========
 async function getAIExplanation(equation, userAnswer) {
     try {
-        // URL твоего бекенда (после деплоя)
-        const response = await fetch('https://твой-бекенд.vercel.app/api/explain', {
+        const response = await fetch('https://geekpy-backend.vercel.app/api/explain', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ equation, userAnswer })
         });
         
         const data = await response.json();
-        return data.explanation;
+        return data.explanation || 'Не удалось получить объяснение';
         
     } catch (error) {
-        console.error('Ошибка вызова ИИ:', error);
-        return 'Не удалось получить подсказку. Попробуй ещё раз.';
+        console.error('❌ Ошибка ИИ:', error);
+        return '😴 ИИ временно недоступен. Попробуй позже.';
     }
 }
 
@@ -892,8 +895,10 @@ async function getAIExplanation(equation, userAnswer) {
     if (window.Telegram && window.Telegram.WebApp) {
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.setHeaderColor('#0a0c10');
-        tg.setBackgroundColor('#0a0c10');
+        if (tg.version && parseFloat(tg.version) >= 6.1) {
+            tg.setHeaderColor('#0a0c10');
+            tg.setBackgroundColor('#0a0c10');
+        }
         tg.ready();
 
         const initData = tg.initDataUnsafe;
@@ -1302,6 +1307,30 @@ if (themeToggle) {
             saveUserData();
             saveProgressToDB();
         });
+
+// ИИ-помощник
+document.getElementById('aiHelpBtn').addEventListener('click', async () => {
+    const current = userData.currentLesson[userData.currentIndex];
+    const userAnswer = document.getElementById('answerInput').value;
+    
+    if (!userAnswer) {
+        alert('Сначала введи ответ');
+        return;
+    }
+    
+    const aiBtn = document.getElementById('aiHelpBtn');
+    const originalText = aiBtn.innerHTML;
+    
+    aiBtn.disabled = true;
+    aiBtn.innerHTML = '⏳ ИИ думает...';
+    
+    const explanation = await getAIExplanation(current.eq, userAnswer);
+    
+    document.getElementById('hintText').innerHTML = `<strong>🤖 ИИ подсказка:</strong> ${explanation}`;
+    
+    aiBtn.disabled = false;
+    aiBtn.innerHTML = originalText;
+});
 
         // Остальные обработчики
         document.getElementById('avatarUpload').addEventListener('change', (e) => {
