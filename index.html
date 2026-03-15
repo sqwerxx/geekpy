@@ -42,6 +42,11 @@
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
 
+        .home-subtitle {
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
@@ -639,7 +644,7 @@
                 <div style="font-size: 24px; font-weight: 600; margin-bottom: 20px;">
                     Добро пожаловать в Geekpy!
                 </div>
-                <div style="font-size: 16px; color: rgba(255,255,255,0.7); margin-bottom: 30px;">
+                <div class="home-subtitle" style="font-size: 16px; margin-bottom: 30px;">
                     Начни изучение линейных уравнений
                 </div>
                 <button id="startLessonBtn" class="btn btn-primary" style="width: 100%;">
