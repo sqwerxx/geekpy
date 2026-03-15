@@ -840,6 +840,24 @@ let TELEGRAM_ID = null;
         ]
     };
 
+async function getAIExplanation(equation, userAnswer) {
+    try {
+        // URL твоего бекенда (после деплоя)
+        const response = await fetch('https://твой-бекенд.vercel.app/api/explain', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ equation, userAnswer })
+        });
+        
+        const data = await response.json();
+        return data.explanation;
+        
+    } catch (error) {
+        console.error('Ошибка вызова ИИ:', error);
+        return 'Не удалось получить подсказку. Попробуй ещё раз.';
+    }
+}
+
     function newLesson() {
         const shuffled = [...userData.exampleBank].sort(() => 0.5 - Math.random());
         userData.currentLesson = shuffled.slice(0, 5);
