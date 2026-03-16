@@ -1224,6 +1224,15 @@ function updateTopicsList() {
             });
         });
 
+// ========== АНИМАЦИЯ ПЕЧАТНОГО ТЕКСТА ==========
+async function typeText(element, text, speed = 30) {
+    element.innerHTML = '';
+    for (let i = 0; i < text.length; i++) {
+        element.innerHTML += text[i];
+        await new Promise(resolve => setTimeout(resolve, speed));
+    }
+}
+        
 // ========== СМЕНА ТЕМЫ ==========
 function applyTheme(theme) {
     const root = document.documentElement;
@@ -1373,7 +1382,9 @@ if (themeToggle) {
             
             const explanation = await getAIExplanation(current.eq, userAnswer);
             
-            document.getElementById('hintText').innerHTML = `<strong>🤖 ИИ подсказка:</strong> ${explanation}`;
+            const hintText = document.getElementById('hintText');
+                hintText.innerHTML = '<strong>🤖 ИИ подсказка:</strong> ';
+                await typeText(hintText, explanation, 20);
             
             aiBtn.disabled = false;
             aiBtn.innerHTML = originalText;
