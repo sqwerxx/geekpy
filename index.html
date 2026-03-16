@@ -404,20 +404,18 @@
             font-family: 'Geologica', sans-serif;
         }
         
-        .topic {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 14px;
-            border-bottom: 1px solid var(--glass-border);
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        
-        .topic:hover { background: var(--hover-bg); }
-        
-        .topic:last-child { border-bottom: none; }
-        
+.topic {
+    display: block;
+    padding: 16px;
+    border-bottom: 1px solid var(--glass-border);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.topic:hover { background: var(--hover-bg); }
+
+.topic:last-child { border-bottom: none; }
+
         .topic-icon {
             width: 44px;
             height: 44px;
@@ -436,31 +434,33 @@
             min-width: 0; 
         }
         
-        .topic-name {
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-            font-family: 'Geologica', sans-serif;
-            word-wrap: break-word;
-        }
+.topic-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 16px;
+    margin-bottom: 6px;
+    font-family: 'Geologica', sans-serif;
+    white-space: normal;
+    word-wrap: break-word;
+}
         
-        .topic-meta {
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-family: 'Geologica', sans-serif;
-        }
-        
-        .topic-status {
-            padding: 6px 14px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 600;
-            background: var(--input-bg);
-            color: var(--accent-blue);
-            border: 1px solid var(--glass-border);
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
+.topic-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    font-family: 'Geologica', sans-serif;
+}
+
+.topic-status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--input-bg);
+    color: var(--accent-blue);
+    border: 1px solid var(--glass-border);
+}
         
         .title {
             font-size: 18px;
@@ -1126,7 +1126,7 @@ async function getAIExplanation(equation, userAnswer) {
         return 'Реши уравнение';
     }
 
-    function updateTopicsList() {
+function updateTopicsList() {
     const list = document.getElementById('topicsList');
     if (!list) return;
     list.innerHTML = '';
@@ -1134,13 +1134,29 @@ async function getAIExplanation(equation, userAnswer) {
     userData.topics.forEach(t => {
         const el = document.createElement('div');
         el.className = 'topic';
+        
+        // Определяем иконку и текст статуса
+        let statusIcon = '';
+        let statusText = '';
+        
+        if (t.status === 'доступно') {
+            statusIcon = 'lock_open';
+            statusText = 'Доступно';
+        } else if (t.status === 'пройдено') {
+            statusIcon = 'check_circle';
+            statusText = 'Пройдено';
+        } else {
+            statusIcon = 'lock';
+            statusText = 'Закрыто';
+        }
+        
         el.innerHTML = `
-            <div class="topic-icon">${t.status === 'доступно' ? '🔓' : '✅'}</div>
-            <div class="topic-info">
-                <div class="topic-name">${t.name}</div>
-                <div class="topic-meta">Уроков: ${t.completedLessons}/${t.totalLessons} • Точность: ${t.accuracy}</div>
+            <div class="topic-name">${t.name}</div>
+            <div class="topic-meta">Уроков: ${t.completedLessons}/${t.totalLessons} • Точность: ${t.accuracy}</div>
+            <div class="topic-status">
+                <span class="material-symbols-outlined" style="font-size: 16px; margin-right: 4px;">${statusIcon}</span>
+                ${statusText}
             </div>
-            <div class="topic-status">${t.status}</div>
         `;
         
         el.addEventListener('click', () => { 
