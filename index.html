@@ -1170,22 +1170,6 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYnJiZm5kZ3J4bWhzc2ZxeXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDg4NjksImV4cCI6MjA4ODIyNDg2OX0.TW1avreYkB80OiK-3Yu-BazXHN0PHaFZUpa2M9MmWZs';
         const geekpyDB = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // ========== ФОН С ЭЛЕГАНТНЫМИ ЛИНИЯМИ ==========
-        const canvas = document.getElementById('networkCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
-        function getThemeAccentColor() {
-            const style = getComputedStyle(document.body);
-            return style.getPropertyValue('--accent').trim() || '#a59b8f';
-        }
-
 // ========== ФОН С ПЛАВНО ПЛЫВУЩИМИ ЛИНИЯМИ ==========
 const canvas = document.getElementById('networkCanvas');
 const ctx = canvas.getContext('2d');
