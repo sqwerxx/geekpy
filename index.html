@@ -928,6 +928,9 @@
                 <button id="startLessonBtn" class="btn btn-primary" style="width: 100%;">
                     Начать урок
                 </button>
+                <button id="presentationBtn" class="btn btn-outline" style="width: 100%;">
+                    <span class="material-symbols-outlined">movie</span> Коротко о Geekpy
+                </button>
             </div>
         </div>
 
@@ -1527,6 +1530,11 @@ animateCurves();
                 });
             });
 
+            // Кнопка презентации
+            document.getElementById('presentationBtn').addEventListener('click', () => {
+                window.open('https://sqwerxx.github.io/geekpypres/', '_blank');
+            });
+            
             document.getElementById('startLessonBtn').addEventListener('click', () => {
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
