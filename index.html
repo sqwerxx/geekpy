@@ -1532,7 +1532,12 @@ animateCurves();
 
             // Кнопка презентации
             document.getElementById('presentationBtn').addEventListener('click', () => {
-                window.open('https://sqwerxx.github.io/geekpypres/', '_blank');
+                if (window.Telegram && window.Telegram.WebApp) {
+                    // Открыть как обычную ссылку, но Telegram покажет её во встроенном браузере
+                    window.Telegram.WebApp.openLink('https://sqwerxx.github.io/geekpypres/');
+                } else {
+                    window.open('https://sqwerxx.github.io/geekpypres/', '_blank');
+                }
             });
             
             document.getElementById('startLessonBtn').addEventListener('click', () => {
