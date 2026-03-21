@@ -925,7 +925,7 @@
                 <div class="home-subtitle" style="font-size: 16px; margin-bottom: 30px;">
                     Начни изучение линейных уравнений
                 </div>
-                <button id="startLessonBtn" class="btn btn-primary" style="width: 100%;">
+                <button id="startLessonBtn" class="btn btn-primary" style="width: 100%; margin-bottom: 12px;">
                     Начать урок
                 </button>
                 <button id="presentationBtn" class="btn btn-outline" style="width: 100%;">
@@ -1049,7 +1049,7 @@
                         </div>
                         <div class="theme-option" data-theme="dreams">
                             <div class="theme-color" style="background: #f2f0f0;"></div>
-                            <span class="theme-name">Подавленные мечты</span>
+                            <span class="theme-name">Заветные грёзы</span>
                         </div>
                     </div>
                     
@@ -1057,7 +1057,7 @@
                     <div class="theme-selector">
                         <div class="theme-option" data-theme="autumn-night">
                             <div class="theme-color" style="background: #2b2520;"></div>
-                            <span class="theme-name">Осенняя ночь</span>
+                            <span class="theme-name">Тихая ночь</span>
                         </div>
                         <div class="theme-option" data-theme="sea-mist">
                             <div class="theme-color" style="background: #1e262b;"></div>
@@ -1534,7 +1534,7 @@ animateCurves();
             document.getElementById('presentationBtn').addEventListener('click', () => {
                 if (window.Telegram && window.Telegram.WebApp) {
                     // Открыть как обычную ссылку, но Telegram покажет её во встроенном браузере
-                    window.Telegram.WebApp.openLink('https://sqwerxx.github.io/geekpypres/');
+                    window.Telegram.WebApp.openLink('https://sqwerxx.github.io/geekpypres/?tgWebApp=true');
                 } else {
                     window.open('https://sqwerxx.github.io/geekpypres/', '_blank');
                 }
