@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="tg:color" content="#fdfaf5">
-    <title>Geekpy — дневник впечатлений</title>
+    <title>Geekpy</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1533,10 +1533,8 @@ animateCurves();
             // Кнопка презентации
             document.getElementById('presentationBtn').addEventListener('click', () => {
                 if (window.Telegram && window.Telegram.WebApp) {
-                    // Открыть как обычную ссылку, но Telegram покажет её во встроенном браузере
-                    window.Telegram.WebApp.openLink('https://sqwerxx.github.io/geekpypres/?tgWebApp=true');
-                } else {
-                    window.open('https://sqwerxx.github.io/geekpypres/', '_blank');
+                    // Открываем как WebApp
+                    window.Telegram.WebApp.openLink('https://sqwerxx.github.io/geekpypres/');
                 }
             });
             
