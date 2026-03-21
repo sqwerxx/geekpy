@@ -1533,8 +1533,8 @@ animateCurves();
             // Кнопка презентации
             document.getElementById('presentationBtn').addEventListener('click', () => {
                 if (window.Telegram && window.Telegram.WebApp) {
-                    // Открываем как WebApp
-                    window.Telegram.WebApp.openLink('https://sqwerxx.github.io/geekpypres/?tgWebApp=true');
+                    // Открываем прямую ссылку Mini App
+                    window.Telegram.WebApp.openTelegramLink('https://t.me/Geekpy_bot/prezentation');
                 }
             });
             
