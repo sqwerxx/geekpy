@@ -2,1604 +2,712 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="tg:color" content="#fdfaf5">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Geekpy</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,300,0,0" />
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-<style>
-    :root {
-        --bg: #fdfaf5;
-        --bg-secondary: #f5f1ea;
-        --text-primary: #4a4a4a;
-        --text-secondary: #7f7f7f;
-        --text-soft: #b8b2a8;
-        --line: #c0b7a8;
-        --line-light: #e0d9d0;
-        --accent: #a59b8f;
-        --accent-soft: #d3cbc0;
-        --glow: rgba(200, 190, 180, 0.2);
-        --shadow: rgba(0, 0, 0, 0.02);
-        transition: background-color 0.8s cubic-bezier(0.25, 0.1, 0.2, 1), 
-                    color 0.8s cubic-bezier(0.25, 0.1, 0.2, 1), 
-                    border-color 0.8s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-
-    body.theme-autumn-morning {
-        --bg: #fdfaf5;
-        --bg-secondary: #f5f1ea;
-        --text-primary: #4a4a4a;
-        --text-secondary: #7f7f7f;
-        --line: #c0b7a8;
-        --line-light: #e0d9d0;
-        --accent: #a59b8f;
-        --accent-soft: #d3cbc0;
-    }
-
-    body.theme-cheesecake {
-        --bg: #fff9f2;
-        --bg-secondary: #faefe6;
-        --text-primary: #5e4b3e;
-        --text-secondary: #a48d7b;
-        --line: #e3d3c4;
-        --line-light: #f0e5da;
-        --accent: #d4b0a0;
-        --accent-soft: #e8cfc0;
-    }
-
-    body.theme-dreams {
-        --bg: #f2f0f0;
-        --bg-secondary: #e5e3e3;
-        --text-primary: #5a5a6e;
-        --text-secondary: #8a8a9e;
-        --line: #c9c9d0;
-        --line-light: #dddddd;
-        --accent: #a5a5b5;
-        --accent-soft: #c5c5d0;
-    }
-
-    body.theme-autumn-night {
-        --bg: #2b2520;
-        --bg-secondary: #3e3530;
-        --text-primary: #f0e2d5;
-        --text-secondary: #c0b2a5;
-        --line: #6b5f55;
-        --line-light: #5a4f45;
-        --accent: #b8a99a;
-        --accent-soft: #8a7b6c;
-    }
-
-    body.theme-sea-mist {
-        --bg: #1e262b;
-        --bg-secondary: #2d363b;
-        --text-primary: #dee5e8;
-        --text-secondary: #aab7bf;
-        --line: #5a6a73;
-        --line-light: #4a5a63;
-        --accent: #8fa3b0;
-        --accent-soft: #6f838f;
-    }
-
-    body.theme-moonlight {
-        --bg: #25282c;
-        --bg-secondary: #34383d;
-        --text-primary: #f0f0f0;
-        --text-secondary: #c0c0c0;
-        --line: #5d6268;
-        --line-light: #4d5258;
-        --accent: #b0b8c0;
-        --accent-soft: #9098a0;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    body {
-        min-height: 100vh;
-        font-family: 'Geologica', serif;
-        background: var(--bg);
-        color: var(--text-primary);
-        display: flex;
-        flex-direction: column;
-        position: relative;
-        overflow-x: hidden;
-        line-height: 1.6;
-        font-weight: 300;
-        transition: background-color 0.8s cubic-bezier(0.25, 0.1, 0.2, 1), 
-                    color 0.8s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .equation, code, pre {
-        font-family: 'Fira Code', monospace;
-        font-size: 36px;
-        font-weight: 400;
-        color: var(--text-primary);
-        letter-spacing: 0.02em;
-        transition: all 0.2s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .btn, .input, .topic-name, .stat-label, .profile-name, .settings-label, .title {
-        font-family: 'Geologica', sans-serif;
-        font-weight: 400;
-    }
-    
-    #networkCanvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 1;
-        pointer-events: none;
-    }
-    
-    .app-header {
-        position: fixed;
-        top: 2%;
-        left: 0;
-        right: 0;
-        z-index: 20;
-        padding: 12px 12px 0 12px;
-        max-width: 75%;
-        margin: 0 auto;
-        width: 100%;
-    }
-    
-    .app-content {
-        position: fixed;
-        top: 18%;
-        bottom: 80px;
-        left: 0;
-        right: 0;
-        overflow-y: auto;
-        padding: 0 12px;
-        z-index: 10;
-        max-width: 75%;
-        margin: 0 auto;
-        width: 100%;
-        scrollbar-width: none;
-    }
-    
-    .app-content::-webkit-scrollbar { display: none; }
-    
-    .app-footer {
-        position: fixed;
-        bottom: 2%;
-        left: 0;
-        right: 0;
-        z-index: 20;
-        padding: 0 12px 12px 12px;
-        max-width: 75%;
-        margin: 0 auto;
-        width: 100%;
-    }
-    
-    .card, .glass {
-        background: var(--bg-secondary);
-        border: none;
-        border-radius: 0;
-        padding: 24px 20px;
-        box-shadow: 
-            2px 2px 0 var(--line-light),
-            4px 4px 0 rgba(0,0,0,0.02);
-        position: relative;
-        color: var(--text-primary);
-        width: 100%;
-        margin-bottom: 16px;
-        animation: fadeIn 0.8s cubic-bezier(0.25, 0.1, 0.2, 1);
-        transition: background-color 0.4s cubic-bezier(0.25, 0.1, 0.2, 1), 
-                    box-shadow 0.4s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .card::after, .glass::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background: repeating-linear-gradient(
-            90deg,
-            var(--line-light),
-            var(--line-light) 4px,
-            transparent 4px,
-            transparent 8px
-        );
-        pointer-events: none;
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(8px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .glass:last-child, .card:last-child { margin-bottom: 0; }
-    
-    .page {
-        display: none;
-        opacity: 0;
-        transition: opacity 0.6s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .page.active {
-        display: block;
-        opacity: 1;
-    }
-    
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
-    }
-    
-    .logo {
-        font-size: 26px;
-        font-weight: 500;
-        font-family: 'Geologica', sans-serif;
-        color: var(--text-primary);
-        letter-spacing: -0.02em;
-        transition: color 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .avatar {
-        width: 44px;
-        height: 44px;
-        border-radius: 0;
-        background: var(--bg);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        font-weight: 400;
-        color: var(--accent);
-        border: 1px solid var(--line-light);
-        cursor: pointer;
-        overflow: hidden;
-        box-shadow: 1px 1px 0 var(--line-light);
-        transition: all 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .avatar:hover {
-        transform: translate(-1px, -1px);
-        box-shadow: 2px 2px 0 var(--line);
-    }
-    
-    .avatar img { width: 100%; height: 100%; object-fit: cover; }
-    
-    .avatar .initials {
-        width: 100%; height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--bg-secondary);
-    }
-    
-    .progress-header {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 12px;
-        font-size: 14px;
-        color: var(--text-secondary);
-        font-weight: 400;
-        letter-spacing: 0.02em;
-        text-transform: uppercase;
-    }
-    
-    .progress-bar {
-        height: 4px;
-        background: repeating-linear-gradient(
-            90deg,
-            var(--line-light),
-            var(--line-light) 4px,
-            transparent 4px,
-            transparent 8px
-        );
-        overflow: hidden;
-        width: 100%;
-        position: relative;
-    }
-    
-    .progress-fill {
-        height: 100%;
-        background: var(--accent);
-        position: relative;
-        transition: width 0.6s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .progress-fill::after {
-        content: '';
-        position: absolute;
-        right: 0;
-        top: -2px;
-        width: 8px;
-        height: 8px;
-        background: var(--accent);
-        border-radius: 0;
-        opacity: 0.5;
-    }
-    
-    .equation-box {
-        background: var(--bg);
-        border: 1px solid var(--line-light);
-        border-radius: 0;
-        padding: 28px;
-        margin: 20px 0;
-        position: relative;
-        box-shadow: inset 0 0 0 1px var(--glow);
-        transition: all 0.4s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .equation-box:hover {
-        box-shadow: inset 0 0 0 1px var(--accent);
-    }
-    
-    .equation-box::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: 
-            repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 23px,
-                var(--line-light) 23px,
-                var(--line-light) 24px
-            );
-        opacity: 0.1;
-        pointer-events: none;
-    }
-    
-    .equation {
-        font-size: 36px;
-        color: var(--text-primary);
-        line-height: 1.3;
-        font-family: 'Fira Code', monospace;
-        font-weight: 400;
-        letter-spacing: 0.02em;
-        word-break: break-word;
-        text-align: center;
-        transition: opacity 0.2s cubic-bezier(0.25, 0.1, 0.2, 1), 
-                    transform 0.2s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .equation-label {
-        font-size: 14px;
-        color: var(--text-secondary);
-        margin-top: 8px;
-        font-family: 'Geologica', sans-serif;
-        text-align: center;
-        transition: color 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .home-subtitle {
-        color: var(--text-secondary);
-        transition: color 0.4s cubic-bezier(0.25, 0.1, 0.2, 1);
-        font-size: 16px;
-        margin-bottom: 30px;
-        text-align: center;
-    }
-    
-    .input {
-        width: 100%;
-        padding: 16px 20px;
-        font-size: 16px;
-        background: var(--bg);
-        border: 1px solid var(--line-light);
-        border-radius: 0;
-        color: var(--text-primary);
-        font-family: 'Geologica', sans-serif;
-        margin: 12px 0;
-        outline: none;
-        transition: border-color 0.3s cubic-bezier(0.25, 0.1, 0.2, 1), 
-                    box-shadow 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-        box-shadow: inset 1px 1px 3px var(--glow);
-    }
-    
-    .input:focus {
-        border-color: var(--accent);
-        box-shadow: inset 1px 1px 3px var(--accent-soft);
-    }
-    
-    .input::placeholder { color: var(--text-soft); }
-    
-    .buttons {
-        display: flex;
-        gap: 12px;
-        margin: 16px 0;
-        width: 100%;
-        flex-wrap: wrap;
-    }
-    
-    .btn {
-        background: var(--bg);
-        border: 1px solid var(--line);
-        border-radius: 0;
-        padding: 12px 16px;
-        font-size: 14px;
-        font-weight: 400;
-        font-family: 'Geologica', sans-serif;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        transition: all 0.2s cubic-bezier(0.25, 0.1, 0.2, 1);
-        line-height: 1.2;
-        box-shadow: 2px 2px 0 var(--line-light);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--text-primary);
-        flex: 1;
-        min-width: 120px;
-    }
-    
-    .btn:hover {
-        transform: translate(-1px, -1px);
-        box-shadow: 3px 3px 0 var(--line);
-    }
-    
-    .btn:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--line); }
-    
-    .btn-primary {
-        background: var(--accent-soft);
-        border-color: var(--accent);
-    }
-    
-    .btn-primary:disabled {
-        opacity: 0.4;
-        pointer-events: none;
-    }
-    
-    .btn-outline {
-        background: transparent;
-    }
-    
-    .btn-outline:hover {
-        background: var(--bg-secondary);
-    }
-    
-    .hint {
-        background: var(--bg);
-        border: 1px solid var(--line-light);
-        border-radius: 0;
-        padding: 16px;
-        margin-top: 16px;
-        display: flex;
-        gap: 12px;
-        box-shadow: inset 0 1px 3px var(--glow);
-        transition: background 0.3s cubic-bezier(0.25, 0.1, 0.2, 1), 
-                    border-color 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .hint-icon {
-        color: var(--accent);
-        font-size: 24px;
-        flex-shrink: 0;
-        transition: color 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .hint-text {
-        color: var(--text-primary);
-        font-size: 14px;
-        line-height: 1.6;
-        flex: 1;
-        transition: color 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .hint-text strong { 
-        color: var(--accent); 
-        font-weight: 500;
-        transition: color 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .stats {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        margin: 16px 0;
-    }
-    
-    .stat-item {
-        background: var(--bg);
-        border: 1px solid var(--line-light);
-        border-radius: 0;
-        padding: 12px 16px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 1px 1px 0 var(--line-light);
-        transition: all 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .stat-item:hover {
-        transform: translate(-1px, -1px);
-        box-shadow: 2px 2px 0 var(--line);
-    }
-    
-    .stat-value {
-        font-size: 20px;
-        font-weight: 500;
-        color: var(--accent);
-        line-height: 1.2;
-        transition: color 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .stat-label {
-        font-size: 14px;
-        color: var(--text-secondary);
-        font-weight: 400;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        transition: color 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .topic {
-        display: block;
-        padding: 16px;
-        border-bottom: 1px dashed var(--line-light);
-        cursor: pointer;
-        transition: background 0.3s cubic-bezier(0.25, 0.1, 0.2, 1), 
-                    transform 0.2s cubic-bezier(0.25, 0.1, 0.2, 1);
-        position: relative;
-    }
-    
-    .topic:hover { 
-        background: var(--bg);
-        transform: translateX(2px);
-    }
-    
-    .topic:last-child { border-bottom: none; }
-    
-    .topic-name {
-        font-weight: 500;
-        color: var(--text-primary);
-        font-size: 16px;
-        margin-bottom: 6px;
-        font-family: 'Geologica', sans-serif;
-        white-space: normal;
-        word-wrap: break-word;
-        transition: color 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .topic-meta {
-        font-size: 13px;
-        color: var(--text-secondary);
-        margin-bottom: 8px;
-        font-family: 'Geologica', sans-serif;
-        transition: color 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .topic-status {
-        display: inline-flex;
-        align-items: center;
-        padding: 4px 12px;
-        border-radius: 0;
-        font-size: 12px;
-        font-weight: 400;
-        background: var(--bg);
-        color: var(--accent);
-        border: 1px solid var(--line-light);
-        box-shadow: 1px 1px 0 var(--line-light);
-        transition: all 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .topic-status .material-symbols-outlined {
-        font-size: 16px;
-        margin-right: 4px;
-        transition: all 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .title {
-        font-size: 18px;
-        font-weight: 500;
-        color: var(--text-primary);
-        margin-bottom: 16px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        letter-spacing: 0.02em;
-        text-transform: uppercase;
-        transition: color 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .nav {
-        background: var(--bg-secondary);
-        border: 1px solid var(--line-light);
-        border-radius: 0;
-        padding: 4px;
-        display: flex;
-        justify-content: space-around;
-        width: 100%;
-        gap: 4px;
-        box-shadow: 
-            inset 0 1px 3px var(--glow),
-            2px 2px 0 var(--line-light);
-        transition: all 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .nav-item {
-        padding: 12px 0;
-        border-radius: 0;
-        color: var(--text-secondary);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex: 1;
-        transition: all 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 400;
-        position: relative;
-    }
-    
-    .nav-item:hover {
-        color: var(--accent);
-    }
-    
-    .nav-item.active {
-        background: transparent;
-        color: var(--accent);
-    }
-    
-    .nav-item.active::after {
-        content: '';
-        position: absolute;
-        bottom: 4px;
-        left: 20%;
-        width: 60%;
-        height: 1px;
-        background: var(--accent);
-        transition: all 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .nav-item .material-symbols-outlined { 
-        font-size: 22px;
-        transition: all 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .material-symbols-outlined {
-        font-family: 'Material Symbols Outlined';
-        font-weight: 300;
-        font-size: 24px;
-        line-height: 1;
-        transition: all 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .profile-info {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 20px;
-    }
-    
-    .profile-avatar {
-        width: 80px;
-        height: 80px;
-        border-radius: 0;
-        background: var(--bg);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 36px;
-        color: var(--accent);
-        border: 1px solid var(--line-light);
-        overflow: hidden;
-        cursor: pointer;
-        box-shadow: 2px 2px 0 var(--line-light);
-        transition: all 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .profile-avatar:hover {
-        transform: translate(-1px, -1px);
-        box-shadow: 3px 3px 0 var(--line);
-    }
-    
-    .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    
-    .profile-avatar .initials {
-        width: 100%; height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--bg-secondary);
-        transition: all 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .profile-name {
-        font-size: 20px;
-        font-weight: 500;
-        color: var(--text-primary);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        transition: color 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .edit-name {
-        background: var(--bg-secondary);
-        border: 1px solid var(--line-light);
-        color: var(--accent);
-        padding: 4px 12px;
-        border-radius: 0;
-        font-size: 14px;
-        cursor: pointer;
-        box-shadow: 1px 1px 0 var(--line-light);
-        transition: all 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .edit-name:hover {
-        transform: translate(-1px, -1px);
-        box-shadow: 2px 2px 0 var(--line);
-    }
-    
-    .name-input {
-        background: var(--bg);
-        border: 1px solid var(--accent);
-        border-radius: 0;
-        padding: 8px 16px;
-        color: var(--text-primary);
-        font-size: 16px;
-        font-family: 'Geologica', sans-serif;
-        outline: none;
-        width: 200px;
-        box-shadow: inset 1px 1px 3px var(--glow);
-        transition: border-color 0.3s cubic-bezier(0.25, 0.1, 0.2, 1), 
-                    box-shadow 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .name-input:focus {
-        border-color: var(--accent);
-        box-shadow: inset 1px 1px 3px var(--accent-soft);
-    }
-    
-    .settings-item {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-        padding: 16px 0;
-        border-bottom: 1px dashed var(--line-light);
-        transition: all 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .settings-item:last-child { border-bottom: none; }
-    
-    .settings-label {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: var(--text-primary);
-        font-weight: 400;
-        transition: color 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .toggle {
-        width: 50px;
-        height: 28px;
-        background: var(--line-light);
-        border-radius: 0;
-        position: relative;
-        cursor: pointer;
-        transition: background 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-        flex-shrink: 0;
-        border: 1px solid var(--line);
-    }
-    
-    .toggle::after {
-        content: '';
-        position: absolute;
-        width: 22px;
-        height: 22px;
-        background: white;
-        border-radius: 0;
-        top: 2px;
-        left: 2px;
-        transition: left 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-        border: 1px solid var(--line-light);
-    }
-    
-    .toggle.active {
-        background: var(--accent-soft);
-    }
-    
-    .toggle.active::after {
-        left: 24px;
-    }
-    
-    .theme-selector {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        margin-top: 8px;
-        width: 100%;
-    }
-    
-    .theme-option {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px;
-        background: var(--bg);
-        border: 1px solid var(--line-light);
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-        box-shadow: 1px 1px 0 var(--line-light);
-    }
-    
-    .theme-option:hover {
-        background: var(--bg-secondary);
-        border-color: var(--accent);
-        transform: translate(-1px, -1px);
-        box-shadow: 2px 2px 0 var(--line);
-    }
-    
-    .theme-option.active {
-        border-color: var(--accent);
-        background: var(--accent-soft);
-    }
-    
-    .theme-color {
-        width: 32px;
-        height: 32px;
-        border: 1px solid var(--line-light);
-        background: var(--bg);
-        transition: all 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .theme-name {
-        font-size: 14px;
-        font-weight: 400;
-        color: var(--text-primary);
-        transition: color 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .theme-category {
-        font-size: 16px;
-        font-weight: 500;
-        color: var(--text-primary);
-        margin: 16px 0 8px 0;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        transition: color 0.3s cubic-bezier(0.25, 0.1, 0.2, 1);
-    }
-    
-    .hidden-input { display: none; }
-    
-    .btn .material-symbols-outlined {
-        font-size: 18px;
-    }
-    
-    @media (max-width: 380px) {
-        .btn { 
-            font-size: 13px; 
-            padding: 12px 8px; 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f5f5f0;
+            --card: #ffffff;
+            --text: #1a1a1a;
+            --text-sec: #666666;
+            --accent: #a59b8f;
+            --accent-soft: rgba(165, 155, 143, 0.15);
+            --border: #e5e5e5;
+            --shadow: 0 4px 20px rgba(0,0,0,0.04);
         }
-        .equation { font-size: 32px; }
-        .glass, .card { padding: 16px; }
-    }
-</style>
+        body.theme-autumn-morning { --bg: #f5f5f0; --card: #ffffff; --text: #1a1a1a; --text-sec: #666666; --accent: #a59b8f; --accent-soft: rgba(165, 155, 143, 0.15); --border: #e5e5e5; }
+        body.theme-soft-cheesecake { --bg: #fdf6f0; --card: #ffffff; --text: #2d2420; --text-sec: #8c7b75; --accent: #d4a373; --accent-soft: rgba(212, 163, 115, 0.15); --border: #f0e6df; }
+        body.theme-cherished-dreams { --bg: #f0f4f8; --card: #ffffff; --text: #1e293b; --text-sec: #64748b; --accent: #818cf8; --accent-soft: rgba(129, 140, 248, 0.15); --border: #e2e8f0; }
+        body.theme-quiet-night { --bg: #0f1115; --card: #1a1d24; --text: #e2e8f0; --text-sec: #94a3b8; --accent: #64748b; --accent-soft: rgba(100, 116, 139, 0.2); --border: #2d313a; }
+        body.theme-sea-mist { --bg: #0a192f; --card: #112240; --text: #ccd6f6; --text-sec: #8892b0; --accent: #64ffda; --accent-soft: rgba(100, 255, 218, 0.1); --border: #233554; }
+        body.theme-moonlight { --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --text-sec: #a0a0a0; --accent: #bb86fc; --accent-soft: rgba(187, 134, 252, 0.15); --border: #333333; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; transition: all 0.3s ease; overflow-x: hidden; }
+        
+        #networkCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        
+        .container { max-width: 480px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; padding-bottom: 80px; }
+        
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; }
+        .logo { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+        .logo span { color: var(--accent); }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; font-weight: 600; color: var(--accent); overflow: hidden; }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .page { display: none; animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { background: var(--card); border-radius: 20px; padding: 24px; box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 20px; }
+        
+        .hero-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; line-height: 1.2; }
+        .hero-sub { color: var(--text-sec); font-size: 15px; margin-bottom: 24px; line-height: 1.5; }
+        
+        .btn { width: 100%; padding: 16px; border-radius: 14px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-sec { background: var(--accent-soft); color: var(--accent); }
+        .btn-sec:hover { background: var(--accent); color: #fff; }
+        .btn-text { background: none; color: var(--text-sec); font-size: 14px; padding: 12px; }
+
+        .lesson-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .lesson-title { font-size: 14px; color: var(--text-sec); font-weight: 500; }
+        .lesson-progress { font-size: 14px; font-weight: 600; color: var(--accent); }
+        
+        .progress-bar { height: 4px; background: var(--border); border-radius: 2px; margin-bottom: 30px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s ease; }
+
+        .equation-display { font-size: 36px; font-weight: 700; text-align: center; margin: 30px 0; letter-spacing: 1px; transition: all 0.2s ease; }
+        
+        .input-group { position: relative; margin-bottom: 20px; }
+        .answer-input { width: 100%; padding: 16px; border-radius: 14px; border: 2px solid var(--border); background: var(--bg); font-size: 18px; text-align: center; outline: none; transition: border-color 0.2s; font-family: inherit; color: var(--text); }
+        .answer-input:focus { border-color: var(--accent); }
+        
+        .hint-box { padding: 16px; border-radius: 14px; background: var(--accent-soft); margin-bottom: 20px; font-size: 14px; line-height: 1.5; min-height: 50px; display: flex; align-items: center; }
+        
+        .lesson-actions { display: flex; gap: 12px; }
+        .lesson-actions .btn { flex: 1; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: var(--card); border-radius: 16px; padding: 16px; text-align: center; border: 1px solid var(--border); }
+        .stat-val { font-size: 24px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+        .stat-label { font-size: 12px; color: var(--text-sec); }
+
+        .topic-list { display: flex; flex-direction: column; gap: 12px; }
+        .topic { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s; }
+        .topic:hover { border-color: var(--accent); transform: translateX(4px); }
+        .topic-name { font-weight: 600; margin-bottom: 4px; }
+        .topic-meta { font-size: 12px; color: var(--text-sec); }
+        .topic-status { font-size: 12px; color: var(--accent); margin-top: 8px; display: flex; align-items: center; }
+
+        .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+        .theme-option { padding: 12px; border-radius: 12px; border: 2px solid var(--border); cursor: pointer; text-align: center; font-size: 13px; font-weight: 500; transition: all 0.2s; }
+        .theme-option.active { border-color: var(--accent); background: var(--accent-soft); }
+        .theme-cat { font-size: 12px; color: var(--text-sec); margin: 16px 0 8px; font-weight: 600; }
+
+        .profile-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+        .profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: var(--accent); overflow: hidden; cursor: pointer; }
+        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-info { flex: 1; }
+        .profile-name { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+        .profile-edit { font-size: 13px; color: var(--accent); cursor: pointer; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid var(--border); padding: 12px 20px; display: flex; justify-content: space-around; z-index: 10; max-width: 480px; margin: 0 auto; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sec); cursor: pointer; transition: color 0.2s; font-size: 11px; }
+        .nav-item.active { color: var(--accent); }
+        .nav-item .material-symbols-outlined { font-size: 24px; }
+
+        .name-input { display: none; width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-top: 8px; font-family: inherit; background: var(--bg); color: var(--text); }
+    </style>
 </head>
 <body class="theme-autumn-morning">
     <canvas id="networkCanvas"></canvas>
-
-    <header class="app-header">
-        <div class="glass">
-            <div class="header">
-                <div class="logo">Geekpy</div>
-                <div class="avatar" id="avatarBtn">
-                    <div class="initials" id="avatarInitials">A</div>
-                    <img id="avatarImage" src="" style="display: none;">
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <main class="app-content">
-        <div id="pageHome" class="page active">
-            <div class="glass" style="text-align: center;">
-                <div style="font-size: 24px; font-weight: 500; margin-bottom: 20px;">
-                    Добро пожаловать в Geekpy
-                </div>
-                <div class="home-subtitle" style="font-size: 16px; margin-bottom: 30px;">
-                    Начни изучение линейных уравнений
-                </div>
-                <button id="startLessonBtn" class="btn btn-primary" style="width: 100%; margin-bottom: 12px;">
-                    Начать урок
-                </button>
-                <button id="presentationBtn" class="btn btn-outline" style="width: 100%;">
-                    <span class="material-symbols-outlined">movie</span> Коротко о Geekpy
-                </button>
-            </div>
-        </div>
-
-        <div id="pageLesson" class="page">
-            <div class="glass">
-                <div class="progress-header">
-                    <span id="topicName">Линейные уравнения</span>
-                    <span id="progressText">1/5</span>
-                </div>
-                <div class="progress-bar">
-                    <div id="progressFill" class="progress-fill"></div>
-                </div>
-
-                <div class="equation-box">
-                    <div id="equation" class="equation">2x + 5 = 15</div>
-                    <div class="equation-label">Реши уравнение</div>
-                </div>
-
-                <input id="answerInput" class="input" type="text" placeholder="Введи ответ" value="">
-
-                <div class="buttons">
-                    <button id="checkBtn" class="btn btn-outline">
-                        <span class="material-symbols-outlined">check</span> Проверить
-                    </button>
-                    <button id="nextBtn" class="btn btn-primary">
-                        Далее <span class="material-symbols-outlined">arrow_forward</span>
-                    </button>
-                </div>
-                
-                <button id="aiHelpBtn" class="btn btn-outline" style="width: 100%; margin-top: 8px;">
-                    <span class="material-symbols-outlined">auto_awesome</span> Спросить ИИ
-                </button>
-
-                <div id="hintBox" class="hint">
-                    <span class="material-symbols-outlined hint-icon">lightbulb</span>
-                    <div id="hintText" class="hint-text"></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="pageStats" class="page">
-            <div class="glass">
-                <div class="title">
-                    <span class="material-symbols-outlined" style="color: var(--accent);">insights</span> Статистика
-                </div>
-                
-                <div class="stats" style="display: flex; flex-direction: column; gap: 12px;">
-                    <div class="stat-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px;">
-                        <span class="stat-label">Точность</span>
-                        <span id="statsAccuracy" class="stat-value" style="font-size: 20px;">0%</span>
-                    </div>
-                    <div class="stat-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px;">
-                        <span class="stat-label">Решено</span>
-                        <span id="statsSolved" class="stat-value" style="font-size: 20px;">0</span>
-                    </div>
-                    <div class="stat-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px;">
-                        <span class="stat-label">Ошибки</span>
-                        <span id="statsMistakes" class="stat-value" style="font-size: 20px;">0</span>
-                    </div>
-                </div>
-
-                <div class="title" style="margin-top: 20px; font-size: 16px;">
-                    <span class="material-symbols-outlined" style="color: var(--accent);">error</span> Типичные ошибки
-                </div>
-
-                <div id="mistakesList"></div>
-            </div>
-        </div>
-
-        <div id="pageTopics" class="page">
-            <div class="glass">
-                <div class="title">
-                    <span class="material-symbols-outlined" style="color: var(--accent);">menu_book</span> Доступные темы
-                </div>
-                
-                <div id="topicsList"></div>
-            </div>
-        </div>
-
-        <div id="pageProfile" class="page">
-            <div class="glass">
-                <div class="profile-info">
-                    <div class="profile-avatar" id="profileAvatar">
-                        <div class="initials" id="profileInitials">A</div>
-                        <img id="profileImage" src="" style="display: none;">
-                    </div>
-                    <div class="profile-name" id="profileNameDisplay">
-                        <span id="profileName">Ученик</span>
-                        <button class="edit-name" id="editNameBtn">✏️</button>
-                    </div>
-                    <input type="text" id="nameInput" class="name-input" style="display: none;" placeholder="Введите имя">
-                </div>
-
-                <input type="file" id="avatarUpload" class="hidden-input" accept="image/*">
-
-                <div class="settings-item" style="flex-direction: column; align-items: flex-start; gap: 16px;">
-                    <div class="settings-label">
-                        <span class="material-symbols-outlined" style="color: var(--accent);">palette</span>
-                        Выбери тему
-                    </div>
-                    
-                    <div class="theme-category">🌤️ Светлые</div>
-                    <div class="theme-selector">
-                        <div class="theme-option" data-theme="autumn-morning">
-                            <div class="theme-color" style="background: #fdfaf5;"></div>
-                            <span class="theme-name">Осеннее утро</span>
-                        </div>
-                        <div class="theme-option" data-theme="cheesecake">
-                            <div class="theme-color" style="background: #fff9f2;"></div>
-                            <span class="theme-name">Нежный чизкейк</span>
-                        </div>
-                        <div class="theme-option" data-theme="dreams">
-                            <div class="theme-color" style="background: #f2f0f0;"></div>
-                            <span class="theme-name">Заветные грёзы</span>
-                        </div>
-                    </div>
-                    
-                    <div class="theme-category" style="margin-top: 8px;">🌙 Тёмные</div>
-                    <div class="theme-selector">
-                        <div class="theme-option" data-theme="autumn-night">
-                            <div class="theme-color" style="background: #2b2520;"></div>
-                            <span class="theme-name">Тихая ночь</span>
-                        </div>
-                        <div class="theme-option" data-theme="sea-mist">
-                            <div class="theme-color" style="background: #1e262b;"></div>
-                            <span class="theme-name">Морская мгла</span>
-                        </div>
-                        <div class="theme-option" data-theme="moonlight">
-                            <div class="theme-color" style="background: #25282c;"></div>
-                            <span class="theme-name">Лунный свет</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="settings-item" style="flex-direction: column; align-items: flex-start; gap: 12px;">
-                    <div class="settings-label">
-                        <span class="material-symbols-outlined" style="color: var(--accent);">delete</span>
-                        Сбросить прогресс
-                    </div>
-                    <button id="resetBtn" class="btn btn-outline" style="width: 100%; padding: 10px;">Сбросить</button>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <footer class="app-footer">
-        <div class="nav">
-            <div class="nav-item active" data-page="home">
-                <span class="material-symbols-outlined">home</span>
-            </div>
-            <div class="nav-item" data-page="stats">
-                <span class="material-symbols-outlined">insights</span>
-            </div>
-            <div class="nav-item" data-page="topics">
-                <span class="material-symbols-outlined">menu_book</span>
-            </div>
-            <div class="nav-item" data-page="profile">
-                <span class="material-symbols-outlined">person</span>
-            </div>
-        </div>
-    </footer>
-
-<script>
-    // ================= НАСТРОЙКИ ИИ (HUGGING FACE + QWEN) =================
-
-async function getAIExplanation(equation, userAnswer) {
-    const prompt = `Ты — дружелюбный наставник проекта Geekpy. Объясняешь математику тепло, просто и по-человечески.
-Уравнение: ${equation}
-Ответ ученика: ${userAnswer}
-Задача: Дай короткий разбор решения по шагам. Если ответ ученика неверный, мягко укажи, где именно ошибка. Если верный — похвали. Не пиши воду, будь краток и понятен.`;
-
-    try {
-        //  Теперь стучимся на наш локальный маршрут, а не напрямую в HF
-        const response = await fetch('/api/ai', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                inputs: prompt,
-                parameters: { max_new_tokens: 250, return_full_text: false, temperature: 0.7 }
-            })
-        });
-
-        const data = await response.json();
-
-        if (data.error && data.error.includes('loading')) throw new Error('MODEL_LOADING');
-        if (!response.ok || !data[0]?.generated_text) throw new Error(data.error || 'Ошибка API');
-
-        return data[0].generated_text.replace(/^<s>|<\/s>$/g, '').trim();
-
-    } catch (error) {
-        console.error('AI Error:', error);
-        if (error.message === 'MODEL_LOADING') return '⏳ Модель просыпается. Подожди 10 сек и нажми снова!';
-        return '😴 ИИ временно недоступен. Попробуй позже.';
-    }
-}
-    // ========================================================================
-
-    const isTelegramDesktop = navigator.userAgent.includes('Telegram') && !/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (isTelegramDesktop) {
-        const canvas = document.getElementById('networkCanvas');
-        if (canvas) canvas.style.display = 'none';
-    }
-
-    let telegramUser = null;
-    let TELEGRAM_ID = null;
     
-    let userData = {
-        name: 'Ученик',
-        avatar: null,
-        currentTopic: 'Линейные уравнения',
-        canProceed: false,
-        exampleBank: [
-            { eq: 'x+2=5', ans: 3 }, { eq: 'x-3=7', ans: 10 },
-            { eq: '2x=8', ans: 4 }, { eq: 'x+5=10', ans: 5 },
-            { eq: 'x-1=4', ans: 5 }, { eq: '3x=12', ans: 4 },
-            { eq: 'x+7=15', ans: 8 }, { eq: 'x-5=2', ans: 7 },
-            { eq: '4x=20', ans: 5 }, { eq: 'x+9=14', ans: 5 },
-            { eq: 'x-8=1', ans: 9 }, { eq: '5x=25', ans: 5 },
-            { eq: 'x+3=11', ans: 8 }, { eq: 'x-2=6', ans: 8 },
-            { eq: '6x=30', ans: 5 }, { eq: 'x+4=9', ans: 5 },
-            { eq: 'x-6=3', ans: 9 }, { eq: '7x=35', ans: 5 },
-            { eq: 'x+8=12', ans: 4 }, { eq: 'x-4=5', ans: 9 },
-            { eq: '8x=40', ans: 5 }, { eq: 'x+6=13', ans: 7 },
-            { eq: 'x-7=2', ans: 9 }, { eq: '9x=45', ans: 5 },
-            { eq: 'x+1=9', ans: 8 }, { eq: 'x-9=1', ans: 10 },
-            { eq: '10x=50', ans: 5 }, { eq: 'x+10=18', ans: 8 },
-            { eq: 'x-10=5', ans: 15 }, { eq: '2x+1=9', ans: 4 }
-        ],
-        currentLesson: [],
-        currentIndex: 0,
-        progress: { accuracy: 0, solved: 0, mistakes: 0 },
-        topics: [{ 
-            name: 'Линейные уравнения', 
-            completedLessons: 0,
-            totalLessons: 5,
-            accuracy: '0%', 
-            status: 'доступно'
-        }]
-    };
+    <div class="container">
+        <div class="header">
+            <div class="logo">Geek<span>py</span></div>
+            <div class="avatar" id="avatarInitials">A</div>
+            <img id="avatarImage" src="" style="display:none; width:40px; height:40px; border-radius:50%; object-fit:cover;">
+        </div>
 
-    function setTheme(themeName) {
-        document.body.className = `theme-${themeName}`;
-        localStorage.setItem('geekpy_theme', themeName);
-        
-        document.querySelectorAll('.theme-option').forEach(opt => {
-            opt.classList.remove('active');
-            if (opt.dataset.theme === themeName) {
-                opt.classList.add('active');
-            }
-        });
-    }
+        <!-- ГЛАВНАЯ -->
+        <div id="pageHome" class="page active">
+            <div class="card">
+                <div class="hero-title">Добро пожаловать в Geekpy</div>
+                <div class="hero-sub">Начни изучение математики и физики</div>
+                <button class="btn btn-primary" id="startLessonBtn">Начать урок</button>
+            </div>
+            <button class="btn btn-text" id="presentationBtn">
+                <span class="material-symbols-outlined" style="font-size:18px;">movie</span> Коротко о Geekpy
+            </button>
+        </div>
 
-    const savedTheme = localStorage.getItem('geekpy_theme') || 'autumn-morning';
-    setTheme(savedTheme);
-
-    document.querySelectorAll('.theme-option').forEach(option => {
-        option.addEventListener('click', () => {
-            setTheme(option.dataset.theme);
-        });
-    });
-
-    async function typeText(element, text, speed = 30) {
-        element.innerHTML = '';
-        for (let i = 0; i < text.length; i++) {
-            element.innerHTML += text[i];
-            await new Promise(resolve => setTimeout(resolve, speed));
-        }
-    }
-
-    function newLesson() {
-        const shuffled = [...userData.exampleBank].sort(() => 0.5 - Math.random());
-        userData.currentLesson = shuffled.slice(0, 5);
-        userData.currentIndex = 0;
-        userData.canProceed = false;
-    }
-
-    function selectTopic(topicName) {
-        const topic = userData.topics.find(t => t.name === topicName);
-        if (!topic || topic.status !== 'доступно') return;
-        userData.currentTopic = topic.name;
-        userData.currentIndex = 0;
-        userData.canProceed = false;
-        newLesson();
-        updateUI();
-        saveUserData();
-        saveProgressToDB();
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById('pageLesson').classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    }
-
-    if (window.Telegram && window.Telegram.WebApp) {
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        if (tg.version && parseFloat(tg.version) >= 6.1) {
-            tg.setHeaderColor('#0a0c10');
-            tg.setBackgroundColor('#0a0c10');
-        }
-        tg.ready();
-
-        const initData = tg.initDataUnsafe;
-
-        if (initData && initData.user) {
-            telegramUser = initData.user;
-            TELEGRAM_ID = telegramUser.id;
-            userData.name = telegramUser.first_name || 'Ученик';
-            
-            if (telegramUser.photo_url) {
-                userData.avatar = telegramUser.photo_url;
-                document.getElementById('avatarImage').src = telegramUser.photo_url;
-                document.getElementById('avatarImage').style.display = 'block';
-                document.getElementById('avatarInitials').style.display = 'none';
-                document.getElementById('profileImage').src = telegramUser.photo_url;
-                document.getElementById('profileImage').style.display = 'block';
-                document.getElementById('profileInitials').style.display = 'none';
-            }
-            updateUI();
-        } else {
-            TELEGRAM_ID = null;
-        }
-    } else {
-        TELEGRAM_ID = 1;
-    }
-
-    const supabaseUrl = 'https://hsbrbfndgrxmhssfqyuo.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYnJiZm5kZ3J4bWhzc2ZxeXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDg4NjksImV4cCI6MjA4ODIyNDg2OX0.TW1avreYkB80OiK-3Yu-BazXHN0PHaFZUpa2M9MmWZs';
-    const geekpyDB = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-    const canvas = document.getElementById('networkCanvas');
-    const ctx = canvas.getContext('2d');
-
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    function getThemeAccentColor() {
-        const style = getComputedStyle(document.body);
-        return style.getPropertyValue('--accent').trim() || '#a59b8f';
-    }
-
-    const curves = [
-        {
-            points: [
-                {x: -50, y: 200}, {x: 150, y: 120}, {x: 350, y: 240}, {x: 600, y: 160}, {x: 850, y: 280}
-            ],
-            speeds: [0.002, 0.003, 0.0015, 0.0025, 0.002],
-            amplitudes: [8, 12, 10, 14, 8],
-            offset: 0
-        },
-        {
-            points: [
-                {x: -30, y: 400}, {x: 200, y: 340}, {x: 400, y: 480}, {x: 700, y: 380}, {x: 950, y: 450}
-            ],
-            speeds: [0.001, 0.002, 0.003, 0.0018, 0.0022],
-            amplitudes: [10, 14, 12, 16, 10],
-            offset: 2
-        },
-        {
-            points: [
-                {x: -80, y: 600}, {x: 180, y: 540}, {x: 380, y: 680}, {x: 650, y: 580}, {x: 900, y: 660}
-            ],
-            speeds: [0.0025, 0.0015, 0.002, 0.003, 0.001],
-            amplitudes: [12, 16, 14, 18, 12],
-            offset: 4
-        }
-    ];
-
-    function drawCurve(points, color, alpha, time) {
-        if (points.length < 2) return;
-        ctx.beginPath();
-        ctx.moveTo(points[0].x, points[0].y);
-        for (let i = 1; i < points.length - 2; i++) {
-            const xc = (points[i].x + points[i + 1].x) / 2;
-            const yc = (points[i].y + points[i + 1].y) / 2;
-            ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
-        }
-        if (points.length > 2) {
-            ctx.quadraticCurveTo(points[points.length - 2].x, points[points.length - 2].y, points[points.length - 1].x, points[points.length - 1].y);
-        }
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 1.8;
-        ctx.globalAlpha = alpha * (0.3 + Math.sin(time * 0.5) * 0.1);
-        ctx.stroke();
-    }
-
-    function animateCurves() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const accentColor = getThemeAccentColor();
-        const time = Date.now() * 0.001;
-        curves.forEach((curve, index) => {
-            const animatedPoints = curve.points.map((p, i) => {
-                const speed = curve.speeds[i] || 0.002;
-                const amp = curve.amplitudes[i] || 10;
-                const yOffset = Math.sin(time * speed + curve.offset) * amp;
-                const xOffset = Math.cos(time * speed * 0.7 + curve.offset) * 5;
-                return { x: p.x + xOffset, y: p.y + yOffset };
-            });
-            const alpha = 0.3 + index * 0.1;
-            drawCurve(animatedPoints, accentColor, alpha, time + index);
-        });
-        requestAnimationFrame(animateCurves);
-    }
-    animateCurves();
-            
-    async function saveProgressToDB() {
-        if (!TELEGRAM_ID) return;
-        await geekpyDB.from('progress').upsert({
-            user_id: TELEGRAM_ID,
-            topic_name: userData.currentTopic,
-            current_index: userData.currentIndex,
-            current_lesson: JSON.stringify(userData.currentLesson),
-            solved: userData.progress.solved,
-            mistakes: userData.progress.mistakes,
-            accuracy: userData.progress.accuracy,
-            completed_lessons: userData.topics[0].completedLessons,
-            updated_at: new Date()
-        });
-    }
-
-    async function loadProgressFromDB() {
-        if (!TELEGRAM_ID) return;
-        const { data } = await geekpyDB.from('progress').select('*').eq('user_id', TELEGRAM_ID);
-        if (data && data.length > 0) {
-            const prog = data[0];
-            if (prog.completed_lessons !== undefined) userData.topics[0].completedLessons = prog.completed_lessons;
-            if (prog.current_lesson) {
-                try { userData.currentLesson = JSON.parse(prog.current_lesson); } 
-                catch { newLesson(); }
-            } else newLesson();
-            if (prog.current_index) userData.currentIndex = prog.current_index;
-            if (prog.solved) userData.progress.solved = prog.solved;
-            if (prog.mistakes) userData.progress.mistakes = prog.mistakes;
-            if (prog.accuracy) userData.progress.accuracy = prog.accuracy;
-            updateUI();
-        } else newLesson();
-    }
-
-    async function ensureUserExists() {
-        if (!TELEGRAM_ID) return;
-        const { data } = await geekpyDB.from('users').select('id').eq('id', TELEGRAM_ID);
-        if (!data || data.length === 0) {
-            await geekpyDB.from('users').insert([{
-                id: TELEGRAM_ID,
-                first_name: telegramUser?.first_name || userData.name
-            }]);
-        }
-    }
-
-    function loadUserData() {
-        const saved = localStorage.getItem('geekpy_user');
-        if (saved) try { userData = JSON.parse(saved); } catch { }
-        if (!userData.currentLesson || userData.currentLesson.length === 0) newLesson();
-        updateUI();
-        if (TELEGRAM_ID) { ensureUserExists(); loadProgressFromDB(); }
-    }
-
-    function saveUserData() { localStorage.setItem('geekpy_user', JSON.stringify(userData)); }
-
-    function getHint(eq) {
-        if (eq.includes('+')) return `Перенеси ${eq.split('+')[1].split('=')[0].trim()} в правую часть с противоположным знаком`;
-        if (eq.includes('-')) return `Перенеси ${eq.split('-')[1].split('=')[0].trim()} в правую часть, меняя знак на +`;
-        if (eq.includes('x')) return 'Раздели обе части на коэффициент перед x';
-        return 'Реши уравнение';
-    }
-
-    function updateTopicsList() {
-        const list = document.getElementById('topicsList');
-        if (!list) return;
-        list.innerHTML = '';
-        userData.topics.forEach(t => {
-            const el = document.createElement('div');
-            el.className = 'topic';
-            let statusIcon = '', statusText = '';
-            if (t.status === 'доступно') { statusIcon = 'lock_open'; statusText = 'Доступно'; } 
-            else if (t.status === 'пройдено') { statusIcon = 'check_circle'; statusText = 'Пройдено'; } 
-            else { statusIcon = 'lock'; statusText = 'Закрыто'; }
-            
-            el.innerHTML = `
-                <div class="topic-name">${t.name}</div>
-                <div class="topic-meta">Уроков: ${t.completedLessons}/${t.totalLessons} • Точность: ${t.accuracy}</div>
-                <div class="topic-status">
-                    <span class="material-symbols-outlined" style="font-size: 16px; margin-right: 4px;">${statusIcon}</span>
-                    ${statusText}
+        <!-- УРОК -->
+        <div id="pageLesson" class="page">
+            <div class="card">
+                <div class="lesson-header">
+                    <div class="lesson-title" id="topicName">Линейные уравнения</div>
+                    <div class="lesson-progress" id="progressText">1/5</div>
                 </div>
-            `;
-            el.addEventListener('click', () => { if (t.status === 'доступно') selectTopic(t.name); });
-            list.appendChild(el);
-        });
-    }
+                <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+                
+                <div class="equation-display" id="equation">2x + 5 = 15</div>
+                <div style="text-align:center; color:var(--text-sec); font-size:14px; margin-bottom:20px;">Реши уравнение</div>
+                
+                <div class="input-group">
+                    <input type="number" class="answer-input" id="answerInput" placeholder="Твой ответ">
+                </div>
+                
+                <div class="hint-box" id="hintBox">
+                    <div id="hintText">Подсказка появится здесь</div>
+                </div>
+                
+                <div class="lesson-actions">
+                    <button class="btn btn-sec" id="checkBtn">
+                        <span class="material-symbols-outlined" style="font-size:18px;">check</span> Проверить
+                    </button>
+                    <button class="btn btn-primary" id="nextBtn" disabled>
+                        Далее <span class="material-symbols-outlined" style="font-size:18px;">arrow_forward</span>
+                    </button>
+                </div>
+                <button class="btn btn-text" id="aiHelpBtn" style="margin-top:12px; width:100%;">
+                    <span class="material-symbols-outlined" style="font-size:18px;">auto_awesome</span> Спросить ИИ
+                </button>
+            </div>
+        </div>
 
-    function updateUI() {
-        const current = userData.currentLesson[userData.currentIndex];
-        if (!current) return;
+        <!-- СТАТИСТИКА -->
+        <div id="pageInsights" class="page">
+            <div class="card">
+                <h2 style="margin-bottom:20px; display:flex; align-items:center; gap:8px;">
+                    <span class="material-symbols-outlined" style="color:var(--accent);">lightbulb</span> insights Статистика
+                </h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-val" id="statsAccuracy">0%</div>
+                        <div class="stat-label">Точность</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-val" id="statsSolved">0</div>
+                        <div class="stat-label">Решено</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-val" id="statsMistakes">0</div>
+                        <div class="stat-label">Ошибки</div>
+                    </div>
+                </div>
+                <div style="padding:16px; background:var(--accent-soft); border-radius:14px; font-size:14px; display:flex; align-items:center; gap:8px;">
+                    <span class="material-symbols-outlined" style="color:var(--accent); font-size:20px;">error</span>
+                    Типичные ошибки будут отображаться здесь
+                </div>
+            </div>
+        </div>
 
-        const eqEl = document.getElementById('equation');
-        eqEl.style.opacity = '0'; eqEl.style.transform = 'scale(0.98)';
-        
-        document.getElementById('topicName').textContent = userData.currentTopic;
-        document.getElementById('progressText').textContent = `${userData.currentIndex + 1}/${userData.currentLesson.length}`;
-        document.getElementById('progressFill').style.width = (userData.currentIndex / userData.currentLesson.length * 100) + '%';
-        
-        document.getElementById('statsAccuracy').textContent = userData.progress.accuracy + '%';
-        document.getElementById('statsSolved').textContent = userData.progress.solved;
-        document.getElementById('statsMistakes').textContent = userData.progress.mistakes;
-        
-        document.getElementById('profileName').textContent = userData.name;
-        document.getElementById('avatarInitials').textContent = userData.name.charAt(0);
-        document.getElementById('profileInitials').textContent = userData.name.charAt(0);
+        <!-- ВЫБОР ТЕМЫ (НОВЫЙ МЕНЮ) -->
+        <div id="pageTopics" class="page">
+            <div class="card">
+                <h2 style="margin-bottom:20px; display:flex; align-items:center; gap:8px;">
+                    <span class="material-symbols-outlined" style="color:var(--accent);">menu_book</span> <span id="selectionTitle">Выбери предмет</span>
+                </h2>
+                <div id="selectionList" class="topic-list"></div>
+                <button id="backSelectionBtn" class="btn btn-text" style="display:none; margin-top:10px;">← Назад</button>
+            </div>
+        </div>
 
-        const nextBtn = document.getElementById('nextBtn');
-        nextBtn.disabled = true; nextBtn.style.opacity = '0.5'; nextBtn.style.pointerEvents = 'none';
-        userData.canProceed = false;
+        <!-- ПРОФИЛЬ -->
+        <div id="pageProfile" class="page">
+            <div class="card">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar">
+                        <span id="profileInitials">A</span>
+                        <img id="profileImage" src="" style="display:none;">
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="profileName">Ученик</div>
+                        <div class="profile-edit" id="editNameBtn">✏️ Изменить имя</div>
+                        <input type="text" class="name-input" id="nameInput">
+                    </div>
+                </div>
+                
+                <div class="theme-cat">🌤️ Светлые</div>
+                <div class="theme-grid">
+                    <div class="theme-option active" data-theme="autumn-morning">Осеннее утро</div>
+                    <div class="theme-option" data-theme="soft-cheesecake">Нежный чизкейк</div>
+                    <div class="theme-option" data-theme="cherished-dreams">Заветные грёзы</div>
+                </div>
+                
+                <div class="theme-cat">🌙 Тёмные</div>
+                <div class="theme-grid">
+                    <div class="theme-option" data-theme="quiet-night">Тихая ночь</div>
+                    <div class="theme-option" data-theme="sea-mist">Морская мгла</div>
+                    <div class="theme-option" data-theme="moonlight">Лунный свет</div>
+                </div>
 
-        document.getElementById('hintText').innerHTML = `<strong>Подсказка:</strong> ${getHint(current.eq)}`;
+                <button class="btn btn-text" id="resetBtn" style="margin-top:24px; color:#ef4444;">
+                    <span class="material-symbols-outlined" style="font-size:18px;">delete</span> Сбросить прогресс
+                </button>
+            </div>
+            <input type="file" id="avatarUpload" accept="image/*" style="display:none;">
+        </div>
+    </div>
 
-        setTimeout(() => {
-            eqEl.textContent = current.eq;
-            eqEl.style.opacity = '1'; eqEl.style.transform = 'scale(1)';
-        }, 100);
-        
-        updateTopicsList();
-    }
+    <!-- НАВИГАЦИЯ -->
+    <div class="bottom-nav">
+        <div class="nav-item active" data-page="home">
+            <span class="material-symbols-outlined">home</span> Главная
+        </div>
+        <div class="nav-item" data-page="insights">
+            <span class="material-symbols-outlined">insights</span> Статистика
+        </div>
+        <div class="nav-item" data-page="topics">
+            <span class="material-symbols-outlined">menu_book</span> Темы
+        </div>
+        <div class="nav-item" data-page="profile">
+            <span class="material-symbols-outlined">person</span> Профиль
+        </div>
+    </div>
 
-    document.addEventListener('DOMContentLoaded', () => {
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ================= ГЕНЕРАТОР ЗАДАНИЙ (5 массивов по 15 заданий) =================
+        function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+        const curriculum = {
+            math: {
+                name: 'Математика',
+                topics: {
+                    linear: {
+                        name: 'Линейные уравнения',
+                        lessons: Array.from({length: 5}, (_, l) => {
+                            const level = l + 1;
+                            return Array.from({length: 15}, () => {
+                                const x = rand(1, 5 + level * 2);
+                                const a = rand(1, level);
+                                const b = rand(1, 10 * level);
+                                const c = a * x + b;
+                                return { eq: `${a}x + ${b} = ${c}`, ans: x };
+                            });
+                        })
+                    },
+                    quadratic: {
+                        name: 'Квадратные уравнения',
+                        lessons: Array.from({length: 5}, (_, l) => {
+                            const level = l + 1;
+                            return Array.from({length: 15}, () => {
+                                const x = rand(1, 3 + level);
+                                const a = 1; 
+                                const eq = `x² = ${x*x}`;
+                                return { eq: `Найди положительный корень: ${eq}`, ans: x };
+                            });
+                        })
+                    },
+                    trig: {
+                        name: 'Базовая тригонометрия',
+                        lessons: Array.from({length: 5}, (_, l) => {
+                            const angles = [0, 30, 45, 60, 90];
+                            const funcs = ['sin', 'cos'];
+                            const vals = { 'sin0': 0, 'sin30': 0.5, 'sin45': 0.71, 'sin60': 0.87, 'sin90': 1, 'cos0': 1, 'cos30': 0.87, 'cos45': 0.71, 'cos60': 0.5, 'cos90': 0 };
+                            return Array.from({length: 15}, () => {
+                                const f = funcs[rand(0, 1)];
+                                const a = angles[rand(0, Math.min(l + 1, 4))];
+                                return { eq: `Чему равен ${f}(${a}°)? (округли до сотых)`, ans: vals[f+a] };
+                            });
+                        })
+                    }
+                }
+            },
+            physics: {
+                name: 'Физика',
+                topics: {
+                    phys7: {
+                        name: 'Физика 7 класс',
+                        lessons: Array.from({length: 5}, (_, l) => {
+                            const level = l + 1;
+                            return Array.from({length: 15}, () => {
+                                const v = rand(1, 5 * level);
+                                const t = rand(1, 10);
+                                return { eq: `Скорость ${v} м/с, время ${t} с. Найди путь (м).`, ans: v * t };
+                            });
+                        })
+                    },
+                    phys8: {
+                        name: 'Физика 8 класс',
+                        lessons: Array.from({length: 5}, (_, l) => {
+                            const level = l + 1;
+                            return Array.from({length: 15}, () => {
+                                const U = rand(2, 10 * level);
+                                const R = rand(1, 5);
+                                return { eq: `Напряжение ${U} В, сопротивление ${R} Ом. Найди силу тока (А).`, ans: U / R };
+                            });
+                        })
+                    },
+                    phys9: {
+                        name: 'Физика 9 класс',
+                        lessons: Array.from({length: 5}, (_, l) => {
+                            const level = l + 1;
+                            return Array.from({length: 15}, () => {
+                                const m = rand(1, 5 * level);
+                                const a = rand(1, 10);
+                                return { eq: `Масса ${m} кг, ускорение ${a} м/с². Найди силу (Н).`, ans: m * a };
+                            });
+                        })
+                    }
+                }
+            }
+        };
+
+        // ================= ОСНОВНАЯ ЛОГИКА =================
+        const isTelegramDesktop = navigator.userAgent.includes('Telegram') && !/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         if (isTelegramDesktop) {
-            setTimeout(() => {
-                document.querySelectorAll('.btn, .nav-item, .topic').forEach(el => {
-                    el.replaceWith(el.cloneNode(true));
-                });
-            }, 1000);
+            const canvas = document.getElementById('networkCanvas');
+            if (canvas) canvas.style.display = 'none';
         }
 
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', () => {
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                item.classList.add('active');
-                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-                document.getElementById(`page${item.dataset.page.charAt(0).toUpperCase() + item.dataset.page.slice(1)}`).classList.add('active');
-            });
-        });
-
-        document.getElementById('presentationBtn').addEventListener('click', () => {
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.openTelegramLink('https://t.me/Geekpy_bot/prezentation');
-            }
-        });
+        let telegramUser = null;
+        let TELEGRAM_ID = null;
         
-        document.getElementById('startLessonBtn').addEventListener('click', () => {
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('pageTopics').classList.add('active');
-            const topicsNavItem = Array.from(document.querySelectorAll('.nav-item')).find(item => item.dataset.page === 'topics');
-            if (topicsNavItem) topicsNavItem.classList.add('active');
+        let userData = {
+            name: 'Ученик',
+            avatar: null,
+            currentTopic: 'Линейные уравнения',
+            currentLessonArr: [],
+            currentIndex: 0,
+            canProceed: false,
+            progress: { accuracy: 0, solved: 0, mistakes: 0 },
+            topics: [{ name: 'Линейные уравнения', completedLessons: 0, totalLessons: 5, accuracy: '0%', status: 'доступно' }]
+        };
+
+        function setTheme(themeName) {
+            document.body.className = `theme-${themeName}`;
+            localStorage.setItem('geekpy_theme', themeName);
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                opt.classList.remove('active');
+                if (opt.dataset.theme === themeName) opt.classList.add('active');
+            });
+        }
+
+        const savedTheme = localStorage.getItem('geekpy_theme') || 'autumn-morning';
+        setTheme(savedTheme);
+
+        document.querySelectorAll('.theme-option').forEach(option => {
+            option.addEventListener('click', () => setTheme(option.dataset.theme));
         });
 
-        document.getElementById('checkBtn').addEventListener('click', () => {
-            const ans = document.getElementById('answerInput').value;
-            const correct = userData.currentLesson[userData.currentIndex].ans;
-            const hintBox = document.getElementById('hintBox');
-            const hintText = document.getElementById('hintText');
-            const nextBtn = document.getElementById('nextBtn');
-            
-            if (parseInt(ans) === correct) {
-                if (nextBtn.disabled) userData.progress.solved++;
-                hintText.innerHTML = '✅ Верно!';
-                hintBox.style.background = 'var(--accent-soft)';
-                hintBox.style.animation = 'none';
-                userData.canProceed = true;
-                nextBtn.disabled = false; nextBtn.style.opacity = '1'; nextBtn.style.pointerEvents = 'auto';
-            } else {
-                userData.progress.mistakes++;
-                hintText.innerHTML = '❌ Неправильно';
-                hintBox.style.background = 'var(--accent-soft)';
-                userData.canProceed = false;
-                nextBtn.disabled = true; nextBtn.style.opacity = '0.5'; nextBtn.style.pointerEvents = 'none';
+        async function typeText(element, text, speed = 30) {
+            element.innerHTML = '';
+            for (let i = 0; i < text.length; i++) {
+                element.innerHTML += text[i];
+                await new Promise(resolve => setTimeout(resolve, speed));
             }
-            const total = userData.progress.solved + userData.progress.mistakes;
-            userData.progress.accuracy = total === 0 ? 0 : Math.round((userData.progress.solved / total) * 100);
+        }
+
+        // ================= НОВАЯ ЛОГИКА ВЫБОРА ТЕМ =================
+        let selectionState = { step: 'subject', subject: null, topic: null };
+
+        function renderSelection() {
+            const list = document.getElementById('selectionList');
+            const title = document.getElementById('selectionTitle');
+            const backBtn = document.getElementById('backSelectionBtn');
+            list.innerHTML = '';
+
+            if (selectionState.step === 'subject') {
+                title.textContent = 'Выбери предмет';
+                backBtn.style.display = 'none';
+                Object.values(curriculum).forEach(subj => {
+                    const el = document.createElement('div');
+                    el.className = 'topic';
+                    el.innerHTML = `<div class="topic-name">${subj.name}</div><div class="topic-meta">Нажми, чтобы выбрать темы</div>`;
+                    el.addEventListener('click', () => {
+                        selectionState.subject = subj;
+                        selectionState.step = 'topic';
+                        renderSelection();
+                    });
+                    list.appendChild(el);
+                });
+            } else if (selectionState.step === 'topic') {
+                title.textContent = `Темы: ${selectionState.subject.name}`;
+                backBtn.style.display = 'block';
+                Object.values(selectionState.subject.topics).forEach(top => {
+                    const el = document.createElement('div');
+                    el.className = 'topic';
+                    el.innerHTML = `<div class="topic-name">${top.name}</div><div class="topic-meta">5 уроков разной сложности</div>`;
+                    el.addEventListener('click', () => {
+                        selectionState.topic = top;
+                        selectionState.step = 'lesson';
+                        renderSelection();
+                    });
+                    list.appendChild(el);
+                });
+            } else if (selectionState.step === 'lesson') {
+                title.textContent = `Уроки: ${selectionState.topic.name}`;
+                backBtn.style.display = 'block';
+                selectionState.topic.lessons.forEach((lesson, idx) => {
+                    const el = document.createElement('div');
+                    el.className = 'topic';
+                    const diff = idx === 0 ? 'Лёгкий' : idx === 4 ? 'Сложный' : `Средний ${idx}`;
+                    el.innerHTML = `<div class="topic-name">Урок ${idx + 1}</div><div class="topic-meta">Уровень: ${diff} • 15 заданий</div>`;
+                    el.addEventListener('click', () => startLessonFromSelection(idx));
+                    list.appendChild(el);
+                });
+            }
+        }
+
+        document.getElementById('backSelectionBtn').addEventListener('click', () => {
+            if (selectionState.step === 'lesson') selectionState.step = 'topic';
+            else if (selectionState.step === 'topic') selectionState.step = 'subject';
+            renderSelection();
+        });
+
+        function startLessonFromSelection(lessonIndex) {
+            userData.currentTopic = selectionState.topic.name;
+            userData.currentLessonArr = selectionState.topic.lessons[lessonIndex];
+            userData.currentIndex = 0;
+            userData.canProceed = false;
+            
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('pageLesson').classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            updateUI();
+        }
+
+        // ================= ИНТЕРФЕЙС И ПРОВЕРКА =================
+        function updateUI() {
+            const current = userData.currentLessonArr[userData.currentIndex];
+            if (!current) return;
+
+            const eqEl = document.getElementById('equation');
+            eqEl.style.opacity = '0'; eqEl.style.transform = 'scale(0.98)';
+            
+            document.getElementById('topicName').textContent = userData.currentTopic;
+            document.getElementById('progressText').textContent = `${userData.currentIndex + 1}/${userData.currentLessonArr.length}`;
+            document.getElementById('progressFill').style.width = (userData.currentIndex / userData.currentLessonArr.length * 100) + '%';
+            
             document.getElementById('statsAccuracy').textContent = userData.progress.accuracy + '%';
             document.getElementById('statsSolved').textContent = userData.progress.solved;
             document.getElementById('statsMistakes').textContent = userData.progress.mistakes;
-        });
+            
+            document.getElementById('profileName').textContent = userData.name;
+            document.getElementById('avatarInitials').textContent = userData.name.charAt(0);
+            document.getElementById('profileInitials').textContent = userData.name.charAt(0);
 
-        document.getElementById('nextBtn').addEventListener('click', () => {
-            if (!userData.canProceed) return;
-            if (userData.currentIndex < userData.currentLesson.length - 1) {
-                userData.currentIndex++;
-            } else {
-                const topic = userData.topics[0];
-                topic.completedLessons++;
-                topic.accuracy = userData.progress.accuracy + '%';
-                if (topic.completedLessons >= topic.totalLessons) {
-                    topic.status = 'пройдено';
-                }
-                newLesson();
-            }
-            userData.canProceed = false;
             const nextBtn = document.getElementById('nextBtn');
             nextBtn.disabled = true; nextBtn.style.opacity = '0.5'; nextBtn.style.pointerEvents = 'none';
-            document.getElementById('answerInput').value = '';
-            document.getElementById('hintBox').style.background = '';
-            document.getElementById('hintText').innerHTML = '';
+            userData.canProceed = false;
+
+            document.getElementById('hintText').innerHTML = 'Введи ответ и нажми "Проверить"';
+
+            setTimeout(() => {
+                eqEl.textContent = current.eq;
+                eqEl.style.opacity = '1'; eqEl.style.transform = 'scale(1)';
+            }, 100);
+        }
+
+        if (window.Telegram && window.Telegram.WebApp) {
+            const tg = window.Telegram.WebApp;
+            tg.expand();
+            if (tg.version && parseFloat(tg.version) >= 6.1) {
+                tg.setHeaderColor('#0a0c10');
+                tg.setBackgroundColor('#0a0c10');
+            }
+            tg.ready();
+            const initData = tg.initDataUnsafe;
+            if (initData && initData.user) {
+                telegramUser = initData.user;
+                TELEGRAM_ID = telegramUser.id;
+                userData.name = telegramUser.first_name || 'Ученик';
+                if (telegramUser.photo_url) {
+                    userData.avatar = telegramUser.photo_url;
+                    document.getElementById('avatarImage').src = telegramUser.photo_url;
+                    document.getElementById('avatarImage').style.display = 'block';
+                    document.getElementById('avatarInitials').style.display = 'none';
+                    document.getElementById('profileImage').src = telegramUser.photo_url;
+                    document.getElementById('profileImage').style.display = 'block';
+                    document.getElementById('profileInitials').style.display = 'none';
+                }
+                updateUI();
+            } else { TELEGRAM_ID = null; }
+        } else { TELEGRAM_ID = 1; }
+
+        const supabaseUrl = 'https://hsbrbfndgrxmhssfqyuo.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYnJiZm5kZ3J4bWhzc2ZxeXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDg4NjksImV4cCI6MjA4ODIyNDg2OX0.TW1avreYkB80OiK-3Yu-BazXHN0PHaFZUpa2M9MmWZs';
+        const geekpyDB = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        const canvas = document.getElementById('networkCanvas');
+        const ctx = canvas.getContext('2d');
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        function getThemeAccentColor() {
+            const style = getComputedStyle(document.body);
+            return style.getPropertyValue('--accent').trim() || '#a59b8f';
+        }
+
+        const curves = [
+            { points: [{x:-50,y:200},{x:150,y:120},{x:350,y:240},{x:600,y:160},{x:850,y:280}], speeds:[0.002,0.003,0.0015,0.0025,0.002], amplitudes:[8,12,10,14,8], offset:0 },
+            { points: [{x:-30,y:400},{x:200,y:340},{x:400,y:480},{x:700,y:380},{x:950,y:450}], speeds:[0.001,0.002,0.003,0.0018,0.0022], amplitudes:[10,14,12,16,10], offset:2 },
+            { points: [{x:-80,y:600},{x:180,y:540},{x:380,y:680},{x:650,y:580},{x:900,y:660}], speeds:[0.0025,0.0015,0.002,0.003,0.001], amplitudes:[12,16,14,18,12], offset:4 }
+        ];
+
+        function drawCurve(points, color, alpha, time) {
+            if (points.length < 2) return;
+            ctx.beginPath(); ctx.moveTo(points[0].x, points[0].y);
+            for (let i = 1; i < points.length - 2; i++) {
+                const xc = (points[i].x + points[i+1].x)/2, yc = (points[i].y + points[i+1].y)/2;
+                ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+            }
+            if (points.length > 2) ctx.quadraticCurveTo(points[points.length-2].x, points[points.length-2].y, points[points.length-1].x, points[points.length-1].y);
+            ctx.strokeStyle = color; ctx.lineWidth = 1.8; ctx.globalAlpha = alpha * (0.3 + Math.sin(time*0.5)*0.1); ctx.stroke();
+        }
+
+        function animateCurves() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const accentColor = getThemeAccentColor();
+            const time = Date.now() * 0.001;
+            curves.forEach((curve, index) => {
+                const animatedPoints = curve.points.map((p, i) => {
+                    const speed = curve.speeds[i] || 0.002, amp = curve.amplitudes[i] || 10;
+                    return { x: p.x + Math.cos(time*speed*0.7+curve.offset)*5, y: p.y + Math.sin(time*speed+curve.offset)*amp };
+                });
+                drawCurve(animatedPoints, accentColor, 0.3 + index*0.1, time + index);
+            });
+            requestAnimationFrame(animateCurves);
+        }
+        animateCurves();
+
+        async function saveProgressToDB() {
+            if (!TELEGRAM_ID) return;
+            await geekpyDB.from('progress').upsert({ user_id: TELEGRAM_ID, topic_name: userData.currentTopic, current_index: userData.currentIndex, current_lesson: JSON.stringify(userData.currentLessonArr), solved: userData.progress.solved, mistakes: userData.progress.mistakes, accuracy: userData.progress.accuracy, updated_at: new Date() });
+        }
+
+        function loadUserData() {
+            const saved = localStorage.getItem('geekpy_user');
+            if (saved) try { userData = JSON.parse(saved); } catch {}
+            if (!userData.currentLessonArr || userData.currentLessonArr.length === 0) {
+                // Дефолтный урок, если не выбран
+                userData.currentLessonArr = curriculum.math.topics.linear.lessons[0];
+                userData.currentTopic = 'Линейные уравнения';
+            }
             updateUI();
-            saveUserData();
-            saveProgressToDB();
-        });
+        }
 
-        // ================= ОБНОВЛЕННАЯ КНОПКА ИИ =================
-        document.getElementById('aiHelpBtn').addEventListener('click', async () => {
-            const current = userData.currentLesson[userData.currentIndex];
-            const userAnswer = document.getElementById('answerInput').value;
-            if (!userAnswer) {
-                document.getElementById('hintText').innerHTML = '<strong>⚠️ Сначала введи свой вариант ответа!</strong>';
-                return;
+        function saveUserData() { localStorage.setItem('geekpy_user', JSON.stringify(userData)); }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (isTelegramDesktop) {
+                setTimeout(() => { document.querySelectorAll('.btn, .nav-item, .topic').forEach(el => el.replaceWith(el.cloneNode(true))); }, 1000);
             }
+
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                    item.classList.add('active');
+                    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                    document.getElementById(`page${item.dataset.page.charAt(0).toUpperCase() + item.dataset.page.slice(1)}`).classList.add('active');
+                    if (item.dataset.page === 'topics') {
+                        selectionState = { step: 'subject', subject: null, topic: null };
+                        renderSelection();
+                    }
+                });
+            });
+
+            document.getElementById('presentationBtn').addEventListener('click', () => {
+                if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.openTelegramLink('https://t.me/Geekpy_bot/prezentation');
+            });
             
-            const aiBtn = document.getElementById('aiHelpBtn');
-            const originalText = aiBtn.innerHTML;
-            aiBtn.disabled = true;
-            aiBtn.innerHTML = '⏳ ИИ думает...';
+            document.getElementById('startLessonBtn').addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById('pageTopics').classList.add('active');
+                const topicsNavItem = Array.from(document.querySelectorAll('.nav-item')).find(item => item.dataset.page === 'topics');
+                if (topicsNavItem) topicsNavItem.classList.add('active');
+                selectionState = { step: 'subject', subject: null, topic: null };
+                renderSelection();
+            });
+
+            document.getElementById('checkBtn').addEventListener('click', () => {
+                const ans = parseFloat(document.getElementById('answerInput').value);
+                const correct = userData.currentLessonArr[userData.currentIndex].ans;
+                const hintBox = document.getElementById('hintBox');
+                const hintText = document.getElementById('hintText');
+                const nextBtn = document.getElementById('nextBtn');
+                
+                if (Math.abs(ans - correct) < 0.1) { // Допуск на округление
+                    if (nextBtn.disabled) userData.progress.solved++;
+                    hintText.innerHTML = '✅ Верно!';
+                    hintBox.style.background = 'var(--accent-soft)';
+                    userData.canProceed = true;
+                    nextBtn.disabled = false; nextBtn.style.opacity = '1'; nextBtn.style.pointerEvents = 'auto';
+                } else {
+                    userData.progress.mistakes++;
+                    hintText.innerHTML = '❌ Неправильно. Попробуй ещё раз!';
+                    hintBox.style.background = 'var(--accent-soft)';
+                    userData.canProceed = false;
+                    nextBtn.disabled = true; nextBtn.style.opacity = '0.5'; nextBtn.style.pointerEvents = 'none';
+                }
+                const total = userData.progress.solved + userData.progress.mistakes;
+                userData.progress.accuracy = total === 0 ? 0 : Math.round((userData.progress.solved / total) * 100);
+                document.getElementById('statsAccuracy').textContent = userData.progress.accuracy + '%';
+                document.getElementById('statsSolved').textContent = userData.progress.solved;
+                document.getElementById('statsMistakes').textContent = userData.progress.mistakes;
+            });
+
+            document.getElementById('nextBtn').addEventListener('click', () => {
+                if (!userData.canProceed) return;
+                if (userData.currentIndex < userData.currentLessonArr.length - 1) {
+                    userData.currentIndex++;
+                } else {
+                    // Урок завершён
+                    hintText.innerHTML = '🎉 Урок пройден! Выбери следующий в меню тем.';
+                    document.getElementById('answerInput').value = '';
+                    nextBtn.disabled = true; nextBtn.style.opacity = '0.5'; nextBtn.style.pointerEvents = 'none';
+                    saveUserData(); saveProgressToDB();
+                    return;
+                }
+                userData.canProceed = false;
+                const nextBtn = document.getElementById('nextBtn');
+                nextBtn.disabled = true; nextBtn.style.opacity = '0.5'; nextBtn.style.pointerEvents = 'none';
+                document.getElementById('answerInput').value = '';
+                document.getElementById('hintBox').style.background = '';
+                document.getElementById('hintText').innerHTML = 'Введи ответ и нажми "Проверить"';
+                updateUI();
+                saveUserData();
+                saveProgressToDB();
+            });
+
+            // ЗАГЛУШКА НЕЙРОСЕТИ
+            document.getElementById('aiHelpBtn').addEventListener('click', () => {
+                const hintText = document.getElementById('hintText');
+                hintText.innerHTML = '<strong>️ Нейросеть временно отключена.</strong><br>Попробуй решить сам, братан! Ты справишься.';
+            });
+
+            document.getElementById('avatarUpload').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        userData.avatar = event.target.result;
+                        document.getElementById('avatarImage').src = event.target.result;
+                        document.getElementById('avatarImage').style.display = 'block';
+                        document.getElementById('avatarInitials').style.display = 'none';
+                        document.getElementById('profileImage').src = event.target.result;
+                        document.getElementById('profileImage').style.display = 'block';
+                        document.getElementById('profileInitials').style.display = 'none';
+                        saveUserData();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
             
-            const explanation = await getAIExplanation(current.eq, userAnswer);
-            const hintText = document.getElementById('hintText');
+            document.getElementById('avatarBtn')?.addEventListener('click', () => document.getElementById('avatarUpload').click());
+            document.getElementById('profileAvatar').addEventListener('click', () => document.getElementById('avatarUpload').click());
+
+            document.getElementById('editNameBtn').addEventListener('click', () => {
+                const input = document.getElementById('nameInput');
+                input.style.display = 'block'; input.value = userData.name; input.focus();
+            });
             
-            // Если это системное сообщение о загрузке или ошибке, печатаем сразу без эффекта
-            if (explanation.includes('⏳') || explanation.includes('😴')) {
-                hintText.innerHTML = `<strong>🤖 Geekpy AI:</strong><br>${explanation}`;
-            } else {
-                hintText.innerHTML = '<strong>🤖 Geekpy AI:</strong><br>';
-                await typeText(hintText, explanation, 20);
-            }
-            
-            aiBtn.disabled = false;
-            aiBtn.innerHTML = originalText;
-        });
-        // ==========================================================
+            document.getElementById('nameInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    userData.name = e.target.value;
+                    saveUserData(); updateUI();
+                    e.target.style.display = 'none';
+                }
+            });
 
-        document.getElementById('avatarUpload').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    userData.avatar = event.target.result;
-                    saveUserData();
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-        
-        document.getElementById('avatarBtn').addEventListener('click', () => document.getElementById('avatarUpload').click());
-        document.getElementById('profileAvatar').addEventListener('click', () => document.getElementById('avatarUpload').click());
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                if (confirm('Сбросить прогресс?')) {
+                    localStorage.removeItem('geekpy_user');
+                    location.reload();
+                }
+            });
 
-        document.getElementById('editNameBtn').addEventListener('click', () => {
-            const input = document.getElementById('nameInput');
-            input.style.display = 'block';
-            input.value = userData.name;
-            input.focus();
+            loadUserData();
         });
-        
-        document.getElementById('nameInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                userData.name = e.target.value;
-                saveUserData(); updateUI();
-                e.target.style.display = 'none';
-            }
-        });
-
-        document.getElementById('resetBtn').addEventListener('click', () => {
-            if (confirm('Сбросить прогресс?')) {
-                localStorage.removeItem('geekpy_user');
-                location.reload();
-            }
-        });
-
-        loadUserData();
-    });
-</script>
+    </script>
 </body>
 </html>
